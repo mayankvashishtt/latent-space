@@ -51,6 +51,18 @@ export default {
       });
     }
     const D=3.6;
+    // live decision-region overlay: tiles glow gold where the current cut(s) classify "gold"
+    function buildZone(cx,cz,pred){
+      const grp=new THREE.Group(); const tiles=[]; const R=6.2, STEP=0.92;
+      const geo=new THREE.PlaneGeometry(0.84,0.84); geo.rotateX(-Math.PI/2);
+      const matq=new THREE.MeshBasicMaterial({color:0xffd257,transparent:true,opacity:0.16,depthWrite:false});
+      for(let x=-R;x<=R;x+=STEP) for(let z=-R;z<=R;z+=STEP){
+        const q=new THREE.Mesh(geo,matq); q.position.set(cx+x,Y+0.08,cz+z); grp.add(q);
+        tiles.push({q,x:cx+x,z:cz+z});
+      }
+      s.add(grp);
+      return { update(){ for(const t of tiles) t.q.visible=!!pred(t); } };
+    }
     const ptsA = makePoints([[-D,-D,0],[-D,D,0],[D,-D,0],[D,D,1]], -3);
     const plA = makePlane(W.C.cyan, 0, -3); plA.apply();
     planeConsoles(plA, -2.8, 7, '');
@@ -60,6 +72,8 @@ export default {
     W.room({w:24,h:6,d:26,cz:-28,y:Y,gaps:['s','n'],accent:W.C.magenta});
     const ptsB = makePoints([[-D,-D,0],[-D,D,1],[D,-D,1],[D,D,0]], -28);
     const plB1 = makePlane(W.C.cyan, 0,-28); plB1.apply();
+    const zoneA=buildZone(0,-3, p=> plA.side(p)>0 );
+    const zoneB=buildZone(0,-28, p=> plB2 ? (plB1.side(p)>0 && plB2.side(p)>0) : plB1.side(p)>0 );
     planeConsoles(plB1, -4.2, -19, 'α');
     let plB2=null, phase='A', stableT=0;
     W.terminal({x:8.5,z:-22,y:Y,yaw:-0.9,label:'ARCHIVE · 1969',
@@ -67,8 +81,10 @@ export default {
       html:`<p><em>"No single straight cut can compute XOR."</em></p>
         <p>This proof convinced the world neural networks were a dead end. Funding vanished.
         The field entered its first winter — over exactly the puzzle in front of you.</p>
-        <p class="quote">Dispensing a second plane. New rule: a ball counts as GOLD only if it is on
-        the bright side of <b>BOTH</b> planes. Two cuts, combined, can bend.</p>`,
+        <p class="quote">Dispensing a second plane. New rule: a ball counts as GOLD only where the
+        <b>gold glow of BOTH planes overlaps</b> — watch the glowing zone on the floor.</p>
+        <p><b>The winning shape is a CORRIDOR:</b> make the two walls parallel along the diagonal,
+        facing opposite ways, with both gold balls inside the strip between them.</p>`,
       onOpen:()=>{ if(plB2) return;
         plB2=makePlane(W.C.gold, 0,-28); plB2.apply();
         planeConsoles(plB2, 2.0, -19, 'β');
@@ -133,6 +149,7 @@ export default {
 
     let lastY=null;
     onTick(dt=>{
+      if(act<3){ zoneA.update(); zoneB.update(); }
       // ----- classification feedback -----
       if(act<3){
         const pts = phase==='A'?ptsA:ptsB;
@@ -214,11 +231,11 @@ export default {
       {who:'nova', task:'ACT 2 — go north and try the same trick',
        say:"One straight cut was enough — for THAT pattern. Door's open. New room, new balls. Same wall. Go try.",
        when:()=>G.player.pos.z<-20 && (plB1.theta!==0||plB1.offset!==0)},
-      {who:'bit', task:'Try every angle… then find the 1969 ARCHIVE',
-       say:"Keep spinning it. Take your time. I'll wait. I have literally forever... Okay fine, hint: gold is on OPPOSITE corners. One straight cut will NEVER work. Someone proved it in 1969 and froze my whole field for a decade. There's an archive about it in this room.",
+      {who:'bit', task:'Try every angle… then find the 1969 ARCHIVE terminal',
+       say:"See the gold glow on the floor? That's everything your cut counts as gold — always one half of the room, whatever you do. But the gold balls are on OPPOSITE corners, so no half can ever hold both without a blue one. Someone proved that in 1969 and froze my whole field for a decade. There's an archive about it in this room — go press E on it.",
        when:()=>plB2!==null},
-      {who:'nova', task:'Solve XOR: gold = bright side of BOTH planes',
-       say:"Now you have TWO planes — and a new rule: a ball counts as gold only when it's on the bright side of BOTH. Two simple cuts, combined, make a shape one cut never could. That is a hidden layer. Solve it.",
+      {who:'nova', task:'Make a diagonal CORRIDOR: walls parallel, facing opposite ways, gold balls inside the glow',
+       say:"Watch the floor — the gold glow shows exactly which area counts as gold right now. With two walls the glow is where BOTH gold sides overlap. Your target shape is a corridor: turn both walls to the same diagonal, facing opposite directions, so the glowing strip covers both gold balls and misses both blue ones.",
        when:()=>act>=2.5},
       {who:'bit', task:'Walk to the ledge and STEP OFF',
        say:"Beautiful. But here's the thing — YOU positioned those cuts by hand. I have billions of them. Nobody positions mine by hand. Want to feel how they actually get set? The gold door is open. Walk to the ledge... and step off. Trust me. Sort of.",
