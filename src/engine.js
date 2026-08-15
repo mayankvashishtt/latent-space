@@ -32,7 +32,7 @@ export function boot(levels){
   });
 
   // input
-  addEventListener('keydown', e=>{ G.keys[e.code]=true; if(e.code==='KeyE') tryInteract(); });
+  addEventListener('keydown', e=>{ G.keys[e.code]=true; if(e.code==='KeyE') tryInteract(); if(e.code==='KeyV') voiceToggle(); });
   addEventListener('keyup',   e=>{ G.keys[e.code]=false; });
   document.addEventListener('mousemove', e=>{
     if(!G.locked || G.player.frozen) return;
@@ -62,6 +62,8 @@ export function boot(levels){
 
 // ---------------- level lifecycle ----------------
 export function loadLevel(i){
+  guideClear();
+  try{ window.speechSynthesis && speechSynthesis.cancel(); }catch(e){}
   fade(1);
   setTimeout(()=>{
     disposeLevel();
@@ -119,6 +121,7 @@ function step(dt){
     if(t.t>=1){ G.tweens.splice(i,1); t.done&&t.done(); } }
   G.animated.forEach(m=>{ if(m.userData.spin) m.rotation.y += m.userData.spin*dt; if(m.userData.bob){ m.userData._b=(m.userData._b||0)+dt; m.position.y = m.userData.baseY + Math.sin(m.userData._b*2)*m.userData.bob; } });
   G.ticks.forEach(f=>f(dt));
+  tickGuide(dt);
 
   if(!P.frozen && G.locked){
     const f = new THREE.Vector3(-Math.sin(P.yaw),0,-Math.cos(P.yaw));
@@ -210,9 +213,10 @@ function tryInteract(){ if(aimed && !panelOpen() && !G.player.frozen){ blip(720,
 // ---------------- HUD ----------------
 export function obj(text){ document.getElementById('obj').innerHTML = text; }
 let toastT=null;
-export function toast(text, ms=2600){
+export function toast(text, ms=2600, speak=true){
   const t=document.getElementById('toast'); t.innerHTML=text; t.style.opacity='1';
   clearTimeout(toastT); toastT=setTimeout(()=>t.style.opacity='0', ms);
+  if(speak) say(text);
 }
 export function hudBar(id,label){
   const wrap=document.getElementById('bars');
@@ -239,8 +243,10 @@ export function panel({title='',sub='',html='',buttons}){
     bt.appendChild(btn);
   });
   w.style.display='flex'; G.player.frozen=true; document.exitPointerLock();
+  say(title + '. ' + sub + '. ' + html);
 }
 export function closePanel(){
+  try{ window.speechSynthesis && speechSynthesis.cancel(); }catch(e){}
   document.getElementById('panelWrap').style.display='none';
   G.player.frozen=false;
   document.getElementById('c').requestPointerLock();
@@ -255,6 +261,51 @@ export function after(sec,fn){ const t=setTimeout(fn, sec*1000); G.timers.push(t
 export function tween(obj,prop,to,dur,done){ G.tweens.push({obj,prop,from:obj[prop],to,dur,t:0,done}); }
 export function onTick(fn){ G.ticks.push(fn); }
 export function playerNear(x,z,r){ const p=G.player.pos; return (p.x-x)**2+(p.z-z)**2 < r*r; }
+
+// ---------------- guided steps: voice says -> player does -> next ----------------
+let gSteps=null, gIdx=0, gHold=0;
+export function guide(steps){ gSteps=steps; gIdx=-1; gHold=0; advanceGuide(); }
+export function guideClear(){ gSteps=null; const el=document.getElementById('guide'); if(el) el.style.opacity='0'; }
+function advanceGuide(){
+  gIdx++;
+  const el=document.getElementById('guide');
+  if(!gSteps || gIdx>=gSteps.length){ guideClear(); return; }
+  const st=gSteps[gIdx];
+  el.innerHTML='🔊 '+st.say; el.style.opacity='1';
+  say(st.say);
+  st.do && st.do();
+}
+function tickGuide(dt){
+  if(!gSteps || gIdx<0 || gIdx>=gSteps.length || panelOpen()) return;
+  const st=gSteps[gIdx];
+  if(!st.when){ return; }               // terminal line: stays until guideClear/level end
+  let ok=false; try{ ok=!!st.when(); }catch(e){}
+  if(ok){ gHold+=dt; if(gHold>0.25){ gHold=0; blip(980,.09,'sine',.14); setTimeout(advanceGuide, 650); gSteps[gIdx]={say:st.say}; } }
+  else gHold=0;
+}
+
+// ---------------- voice narrator (built-in browser speech) ----------------
+let voiceOn = localStorage.getItem('ls.voice')!=='0';
+export function say(text){
+  try{
+    if(!voiceOn || !window.speechSynthesis) return;
+    const plain=String(text).replace(/<[^>]*>/g,' ').replace(/&[a-z]+;/gi,' ').replace(/\s+/g,' ').trim();
+    if(!plain) return;
+    speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(plain);
+    u.rate=1.03; u.pitch=0.95; u.volume=0.95;
+    const vs=speechSynthesis.getVoices();
+    const v=vs.find(v=>/Samantha/i.test(v.name)) || vs.find(v=>/Google US English/i.test(v.name)) || vs.find(v=>/^en([-_]US)?/i.test(v.lang));
+    if(v) u.voice=v;
+    speechSynthesis.speak(u);
+  }catch(e){}
+}
+export function voiceToggle(){
+  voiceOn=!voiceOn; localStorage.setItem('ls.voice', voiceOn?'1':'0');
+  if(!voiceOn && window.speechSynthesis) speechSynthesis.cancel();
+  toast(voiceOn?'🔊 voice ON':'🔇 voice OFF');
+  if(voiceOn) say('Voice is on. I will guide you.');
+}
 
 // ---------------- audio (synth, no assets) ----------------
 let AC=null;

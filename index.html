@@ -26,7 +26,11 @@
   #toast{position:absolute;left:50%;bottom:110px;transform:translateX(-50%);font-size:15px;letter-spacing:.1em;
       color:#fff;background:#0a1020cc;border:1px solid var(--edge);padding:10px 22px;border-radius:4px;
       opacity:0;transition:opacity .25s;max-width:70vw;text-align:center}
-  #bars{position:absolute;left:26px;bottom:26px;display:flex;flex-direction:column;gap:10px}
+  #guide{position:absolute;left:50%;bottom:34px;transform:translateX(-50%);max-width:76vw;text-align:center;
+      font-size:16.5px;line-height:1.55;color:#eaf6ff;background:linear-gradient(180deg,#0a1424ee,#0a1020ee);
+      border:1px solid #234a6e;border-bottom:2px solid var(--cy);padding:13px 26px;border-radius:6px;
+      opacity:0;transition:opacity .35s;box-shadow:0 0 30px #54e0ff22;letter-spacing:.02em}
+  #bars{position:absolute;left:26px;bottom:118px;display:flex;flex-direction:column;gap:10px}
   .bar{width:230px}
   .bar .lb{font-size:10px;letter-spacing:.25em;color:#8fb8d8;text-transform:uppercase;margin-bottom:4px}
   .bar .tr{height:8px;background:#0d1526;border:1px solid var(--edge);border-radius:3px;overflow:hidden}
@@ -79,6 +83,7 @@
   <div id="obj"></div>
   <div id="lvlname"></div>
   <div id="toast"></div>
+  <div id="guide"></div>
   <div id="bars"></div>
 </div>
 
@@ -94,8 +99,8 @@
   <div class="start">— click to wake the model —</div>
   <div class="ctl">
     <b>W A S D</b> move &nbsp;·&nbsp; <b>MOUSE</b> look &nbsp;·&nbsp; <b>SPACE</b> jump &nbsp;·&nbsp;
-    <b>E</b> interact &nbsp;·&nbsp; <b>SHIFT</b> run<br>
-    desktop + keyboard required · progress saves automatically
+    <b>E</b> interact &nbsp;·&nbsp; <b>SHIFT</b> run &nbsp;·&nbsp; <b>V</b> voice on/off<br>
+    desktop + keyboard required · progress saves automatically · a voice will guide you 🔊
   </div>
 </div>
 
