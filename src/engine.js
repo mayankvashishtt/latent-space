@@ -32,7 +32,7 @@ export function boot(levels){
   });
 
   // input
-  addEventListener('keydown', e=>{ G.keys[e.code]=true; if(e.code==='KeyE') tryInteract(); if(e.code==='KeyV') voiceToggle(); });
+  addEventListener('keydown', e=>{ G.keys[e.code]=true; if(e.code==='KeyE') tryInteract(); if(e.code==='KeyV') voiceToggle(); if(e.code==='KeyM'&&G.started&&G.openMap) G.openMap(); });
   addEventListener('keyup',   e=>{ G.keys[e.code]=false; });
   document.addEventListener('mousemove', e=>{
     if(!G.locked || G.player.frozen) return;
@@ -50,6 +50,8 @@ export function boot(levels){
     setTimeout(()=>menu.remove(), 850);
     canvas.requestPointerLock();
     loadLevel(0);
+    setTimeout(()=>say('Voice check. If you can hear me, we are ready. Press V any time to mute me.'), 900);
+    setTimeout(()=>{ G.openMap && G.openMap(); }, 2200);
   });
   canvas.addEventListener('click', ()=>{ if(G.started && !panelOpen()) canvas.requestPointerLock(); });
 
@@ -106,7 +108,7 @@ export function complete(){
   panel({
     title:'MECHANISM UNDERSTOOD', sub:L.name,
     html:(cx.html||'') + (cx.lecture?`<p style="margin-top:16px;font-size:13px;color:#7fa8cc">Deep dive → <a href="https://github.com/mayankvashishtt/ai-ml-bootcamp-archive/tree/main/${cx.lecture}" target="_blank">${cx.lecture}</a> in the course archive.</p>`:''),
-    buttons:[{label:'Return to the Stream', primary:true, fn:()=>loadLevel(0)}]
+    buttons:[{label:'See the map ★', primary:true, fn:()=>{ loadLevel(0); setTimeout(()=>G.openMap&&G.openMap(),900); }}]
   });
 }
 
@@ -216,7 +218,7 @@ let toastT=null;
 export function toast(text, ms=2600, speak=true){
   const t=document.getElementById('toast'); t.innerHTML=text; t.style.opacity='1';
   clearTimeout(toastT); toastT=setTimeout(()=>t.style.opacity='0', ms);
-  if(speak) say(text);
+  if(speak) say(text,'bit');
 }
 export function hudBar(id,label){
   const wrap=document.getElementById('bars');
@@ -271,8 +273,10 @@ function advanceGuide(){
   const el=document.getElementById('guide');
   if(!gSteps || gIdx>=gSteps.length){ guideClear(); return; }
   const st=gSteps[gIdx];
-  el.innerHTML='🔊 '+st.say; el.style.opacity='1';
-  say(st.say);
+  const who=st.who||'nova';
+  el.innerHTML='<b class="spk-'+who+'">'+(who==='bit'?'BIT':'NOVA')+'</b>'+st.say;
+  el.style.opacity='1';
+  say(st.say, who);
   st.do && st.do();
 }
 function tickGuide(dt){
@@ -280,31 +284,58 @@ function tickGuide(dt){
   const st=gSteps[gIdx];
   if(!st.when){ return; }               // terminal line: stays until guideClear/level end
   let ok=false; try{ ok=!!st.when(); }catch(e){}
-  if(ok){ gHold+=dt; if(gHold>0.25){ gHold=0; blip(980,.09,'sine',.14); setTimeout(advanceGuide, 650); gSteps[gIdx]={say:st.say}; } }
+  if(ok){ gHold+=dt; if(gHold>0.25){ gHold=0; blip(980,.09,'sine',.14); setTimeout(advanceGuide, 650); gSteps[gIdx]={say:st.say,who:st.who}; } }
   else gHold=0;
 }
 
 // ---------------- voice narrator (built-in browser speech) ----------------
 let voiceOn = localStorage.getItem('ls.voice')!=='0';
-export function say(text){
+const VOICES={nova:null,bit:null};
+function pickVoices(){
+  try{
+    const vs=speechSynthesis.getVoices(); if(!vs.length) return;
+    const en=vs.filter(v=>/^en/i.test(v.lang));
+    const pool=en.length?en:vs;
+    const nova=pool.find(v=>/samantha/i.test(v.name))
+            || pool.find(v=>/google uk english female|zira|victoria|karen|serena|female/i.test(v.name))
+            || pool.find(v=>/google us english/i.test(v.name)) || pool[0];
+    const bit =pool.find(v=>/daniel/i.test(v.name))
+            || pool.find(v=>/google uk english male|david|alex|fred|male/i.test(v.name)&&v!==nova)
+            || pool.find(v=>v!==nova) || nova;
+    VOICES.nova=nova; VOICES.bit=bit;
+  }catch(e){}
+}
+if(window.speechSynthesis){ speechSynthesis.onvoiceschanged=pickVoices; pickVoices(); }
+// Chrome bug workaround: long speech silently dies unless nudged
+setInterval(()=>{ try{ if(window.speechSynthesis&&speechSynthesis.speaking&&!speechSynthesis.paused){ speechSynthesis.pause(); speechSynthesis.resume(); } }catch(e){} }, 8000);
+
+export function say(text, who='nova'){
   try{
     if(!voiceOn || !window.speechSynthesis) return;
-    const plain=String(text).replace(/<[^>]*>/g,' ').replace(/&[a-z]+;/gi,' ').replace(/\s+/g,' ').trim();
+    const plain=String(text).replace(/<[^>]*>/g,' ').replace(/&[a-z]+;/gi,' ').replace(/[·—]/g,', ').replace(/\s+/g,' ').trim();
     if(!plain) return;
     speechSynthesis.cancel();
-    const u=new SpeechSynthesisUtterance(plain);
-    u.rate=1.03; u.pitch=0.95; u.volume=0.95;
-    const vs=speechSynthesis.getVoices();
-    const v=vs.find(v=>/Samantha/i.test(v.name)) || vs.find(v=>/Google US English/i.test(v.name)) || vs.find(v=>/^en([-_]US)?/i.test(v.lang));
-    if(v) u.voice=v;
-    speechSynthesis.speak(u);
+    // chunk into ~sentences (Chrome kills utterances > ~15s)
+    const raw=plain.match(/[^.!?]+[.!?]+|[^.!?]+$/g)||[plain];
+    const parts=[]; let cur='';
+    for(const c of raw){ if((cur+c).length<170){ cur+=c; } else { if(cur.trim())parts.push(cur); cur=c; } }
+    if(cur.trim())parts.push(cur);
+    const prof = who==='bit' ? {v:VOICES.bit, pitch:0.7, rate:1.08} : {v:VOICES.nova, pitch:1.04, rate:1.0};
+    setTimeout(()=>{                       // delay after cancel() — Chrome race fix
+      for(const pt of parts){
+        const u=new SpeechSynthesisUtterance(pt.trim());
+        if(prof.v) u.voice=prof.v;
+        u.pitch=prof.pitch; u.rate=prof.rate; u.volume=1;
+        speechSynthesis.speak(u);
+      }
+    }, 90);
   }catch(e){}
 }
 export function voiceToggle(){
   voiceOn=!voiceOn; localStorage.setItem('ls.voice', voiceOn?'1':'0');
   if(!voiceOn && window.speechSynthesis) speechSynthesis.cancel();
-  toast(voiceOn?'🔊 voice ON':'🔇 voice OFF');
-  if(voiceOn) say('Voice is on. I will guide you.');
+  toast(voiceOn?'🔊 voice ON':'🔇 voice OFF', 2600, false);
+  if(voiceOn) say('Voice is back on.');
 }
 
 // ---------------- audio (synth, no assets) ----------------

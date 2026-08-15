@@ -66,6 +66,43 @@
   #menu .ctl{margin-top:46px;font-size:12px;letter-spacing:.15em;color:#5f86ab;line-height:2.1;text-align:center}
   #menu .ctl b{color:#a8d4f5;background:#0d1830;padding:1px 8px;border-radius:3px;border:1px solid var(--edge)}
   #fade{position:fixed;inset:0;background:#000;z-index:15;pointer-events:none;opacity:0;transition:opacity .6s}
+  /* ---------- speaker names in guide bar ---------- */
+  #guide b{margin-right:10px;letter-spacing:.18em;font-size:12px;padding:2px 8px;border-radius:3px}
+  #guide b.spk-nova{color:#04121c;background:var(--cy)}
+  #guide b.spk-bit{color:#1c0f04;background:var(--gd)}
+  /* ---------- journey map ---------- */
+  #map{position:fixed;inset:0;z-index:25;display:none;align-items:center;justify-content:center;
+      background:radial-gradient(ellipse at 50% 30%,#081226ee 0%,#020408f5 75%)}
+  #mapInner{width:min(1060px,95vw);max-height:92vh;overflow-y:auto;padding:30px 34px}
+  .mapHead{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:22px}
+  .mapHead h1{font-size:30px;letter-spacing:.34em;color:#fff;font-weight:200}
+  .mapHead .sub{font-size:12.5px;letter-spacing:.16em;color:#7fa8cc;margin-top:8px;text-transform:uppercase}
+  .starRow{font-size:34px;letter-spacing:.15em}
+  .starOn{color:var(--gd);text-shadow:0 0 18px #ffd257aa}
+  .starOff{color:#26364c}
+  .worlds{display:grid;grid-template-columns:repeat(auto-fit,minmax(440px,1fr));gap:16px}
+  .world{background:#0a1020dd;border:1px solid #1c3350;border-top:3px solid var(--wc);border-radius:8px;padding:18px 20px}
+  .world.final{margin-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:12px;border-top-color:#ffd257}
+  .wTop{display:flex;align-items:center;gap:10px}
+  .wStar{font-size:22px}
+  .world h2{font-size:14.5px;letter-spacing:.14em;color:var(--wc)}
+  .wBlurb{font-size:13px;color:#9db8d5;line-height:1.6;margin:8px 0 12px}
+  .ch{display:flex;gap:12px;align-items:flex-start;padding:10px 12px;border-radius:6px;margin-top:6px;
+      background:#0d1526;border:1px solid #16263c;transition:all .15s}
+  .ch.next{border-color:var(--wc,#54e0ff);cursor:pointer;box-shadow:0 0 14px #54e0ff22}
+  .ch.next:hover{background:#12203a;transform:translateX(4px)}
+  .ch.done{cursor:pointer;opacity:.85}
+  .ch.done:hover{background:#12203a}
+  .ch.done .chIcon{color:#5cff9d}
+  .ch.locked{opacity:.42}
+  .ch.academy{border-color:#ffd257}
+  .chIcon{font-size:16px;color:var(--wc,#54e0ff);min-width:20px;text-align:center;margin-top:2px}
+  .ch b{font-size:13.5px;letter-spacing:.08em;color:#e4f2ff;display:block}
+  .chD{font-size:12px;color:#87a3c2;line-height:1.5;display:block;margin-top:3px}
+  .mapFoot{text-align:center;margin-top:22px}
+  #mapClose{background:#0d1830;border:1px solid var(--cy);color:var(--cy);padding:11px 30px;font-size:12px;
+      letter-spacing:.25em;cursor:pointer;border-radius:4px;font-family:inherit}
+  #mapClose:hover{background:var(--cy);color:#04060e}
 </style>
 <script type="importmap">
 { "imports": {
@@ -99,7 +136,7 @@
   <div class="start">— click to wake the model —</div>
   <div class="ctl">
     <b>W A S D</b> move &nbsp;·&nbsp; <b>MOUSE</b> look &nbsp;·&nbsp; <b>SPACE</b> jump &nbsp;·&nbsp;
-    <b>E</b> interact &nbsp;·&nbsp; <b>SHIFT</b> run &nbsp;·&nbsp; <b>V</b> voice on/off<br>
+    <b>E</b> interact &nbsp;·&nbsp; <b>SHIFT</b> run &nbsp;·&nbsp; <b>V</b> voice &nbsp;·&nbsp; <b>M</b> map<br>
     desktop + keyboard required · progress saves automatically · a voice will guide you 🔊
   </div>
 </div>
