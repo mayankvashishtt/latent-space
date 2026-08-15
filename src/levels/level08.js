@@ -1,33 +1,14 @@
 // VIII · REWARD PEAKS — you write the reward; the critter optimizes it. Literally it, not your intent.
 import * as THREE from 'three';
-import { G, spawn, obj, toast, complete, chime, buzz, blip, onTick, after } from '../engine.js';
+import { G, spawn, obj, toast, complete, chime, buzz, blip, onTick, after, guide, playerNear } from '../engine.js';
 import * as W from '../world.js';
+import { TEXT } from '../text.js';
 
 export default {
   id:8, name:'VIII · REWARD PEAKS', tagline:'you get what you measure',
   respawn:[0,1,14,0],
-  intro:`
-    <p>In the pen below lives <b>POLIC-E</b>, a small creature that wants exactly one thing:
-    <em>whatever you reward</em>.</p>
-    <p>The task seems simple: <b>get the cube into the basket.</b></p>
-    <p>You cannot tell it what to do. You can only choose the reward signal — and it will optimize
-    that signal with terrifying sincerity.</p>
-    <p class="quote">Choose carefully. It will find whatever you actually wrote, not whatever you meant.</p>`,
-  codex:{
-    html:`<p>You just met <b>Goodhart's Law</b>: when a measure becomes a target, it stops being a good
-      measure. Reward "touching the cube" and the optimal policy is to vibrate against the cube forever —
-      reward counter soaring, task never done. Reward "being near the basket" and it camps in the basket
-      empty-handed. <b>The creature was never wrong. Your reward was.</b></p>
-      <p>This is exactly what happens in RLHF: models trained against a learned reward model find its
-      flaws and exploit them — length padding, sycophancy, confident nonsense. Rising reward is what
-      success <em>and</em> hacking both look like from the inside.</p>
-      <p>Your fix was <b>RLVR — a verifiable reward</b>: the basket itself checks whether the cube is in it.
-      Compute the reward instead of judging it, and there is nothing to hack. That's why reasoning models
-      are trained on math and code — the domains where verification is cheap and exact.</p>
-      <p>The four racing critters at the end were <b>GRPO</b>: no critic model, no absolute score —
-      each rollout rewarded relative to the <em>group average</em>. The group is the baseline.</p>`,
-    lecture:'notes/week-14-fine-tuning-part-3'
-  },
+  intro:TEXT[8].intro,
+  codex:TEXT[8].codex,
   build(){
     const s=G.scene;
     s.fog=new THREE.Fog(0x06040c,18,65);
@@ -133,6 +114,19 @@ export default {
         after(3,()=>complete());
       });
     }
+
+    // -------- voice guide --------
+    guide([
+      {say:"Meet the creature. It wants exactly ONE thing in the universe: whatever you reward. The task is simple — get the cube into the basket. But you can't tell it that. You can only choose what gives it points. Walk to the three buttons.",
+       when:()=>playerNear(-1.5,2,7)},
+      {say:"Start with R1: a point for every moment it touches the cube. Sounds reasonable, right? Press it and watch the creature carefully.",
+       when:()=>tried.r1},
+      {say:"Look at it. Vibrating against the cube. Forever. Points skyrocketing, cube going nowhere. It is NOT broken — it is doing EXACTLY what you rewarded. You said touch, it touches. Now try R2.",
+       when:()=>tried.r2},
+      {say:"It moved into the basket. Empty-handed. Happy. Rich. This is called REWARD HACKING and it is the central problem of training AI: it optimizes your WORDS, not your WISH. Real chatbots do this too — rewarded for answers people like, they learn to flatter and ramble. Now look at R3. What makes it different?",
+       when:()=>playerNear(3,2,4)},
+      {say:"R3 doesn't trust a description — the BASKET ITSELF verifies the cube is inside. A reward checked by facts cannot be gamed. This is why the newest reasoning AIs train on math and code: answers that can be VERIFIED, not judged. Run R3."},
+    ]);
     return {};
   }
 };

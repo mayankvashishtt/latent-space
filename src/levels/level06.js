@@ -1,32 +1,15 @@
 // VI · THE ARCHIVE — semantic search fails on an exact date; grep saves you; then carry the
 // answer through a corridor that stuffs your context until you learn to be surgical.
 import * as THREE from 'three';
-import { G, spawn, obj, toast, complete, chime, buzz, onTick, hold, dropHeld, hudBar } from '../engine.js';
+import { G, spawn, obj, toast, complete, chime, buzz, onTick, hold, dropHeld, hudBar, guide, playerNear } from '../engine.js';
 import * as W from '../world.js';
+import { TEXT } from '../text.js';
 
 export default {
   id:6, name:'VI · THE ARCHIVE', tagline:'similarity is not relevance',
   respawn:[0,1,20,0],
-  intro:`
-    <p>The Archive holds everything the model was never trained on. A request has arrived:</p>
-    <p class="quote">FIND: <b>what changed on 2024-09-15</b></p>
-    <p>Your <em>semantic lantern</em> makes shelves glow by similarity of <em>meaning</em>.
-    Trust it — and then discover what it cannot see.</p>`,
-  codex:{
-    html:`<p>Your lantern was <b>dense retrieval</b> — embedding similarity. It glowed on every shelf
-      <em>about</em> dates and changes, because to a space built on meaning, every date is the same word
-      (you saw that blob in Embedding Space). The distances told the story: 0.551 vs 0.548 — no separation.
-      The right scroll was indistinguishable from the wrong ones, and the failure produced a fluent,
-      confident, <em>wrong</em> answer at the altar.</p>
-      <p>The scanner was <b>BM25 / grep</b> — exact string match, zero notion of meaning. It found
-      <code>2024-09-15</code> instantly, because an identifier is not a concept to approximate.
-      Carrying both tools is <b>hybrid search</b>, and it beats either alone.</p>
-      <p>Then the corridor: every "helpful" scroll that latched on made your light dimmer — that was
-      <b>context rot</b>. Attention is a budget; junk competes with the needle. You passed the reading
-      gate only after shredding down to what mattered.</p>
-      <p class="quote">Every token you add is a bet against accuracy. Be surgical.</p>`,
-    lecture:'notes/week-09-rag-part-1'
-  },
+  intro:TEXT[6].intro,
+  codex:TEXT[6].codex,
   build(){
     const s=G.scene;
     s.fog=new THREE.Fog(0x040308,16,55);
@@ -93,10 +76,10 @@ export default {
 
     // tools
     W.button({x:-3,z:14,label:'SEMANTIC LANTERN',color:W.C.cyan,fn:()=>{ mode='lantern'; refreshGlow();
-      toast('LANTERN — shelves glow by similarity of meaning'); }});
+      toast('LANTERN ON — shelves glow when their TOPIC is similar to your question'); }});
     const scannerBtn=W.button({x:3,z:14,label:'GREP SCANNER (locked)',color:0x44586e,fn:()=>{
       if(!scannerUnlocked){ buzz(); toast('The scanner only wakes after the lantern has failed you once.'); return; }
-      mode='scanner'; refreshGlow(); toast('SCANNER — exact string: "2024-09-15". Meaning ignored entirely.');
+      mode='scanner'; refreshGlow(); toast('SCANNER ON — looks for the exact characters "2024-09-15". Ignores meaning completely.');
     }});
     let scannerUnlocked=false, altarFails=0;
 
@@ -167,6 +150,21 @@ export default {
       if(gate.isOpen && G.player.pos.z<-58){ gate.isOpen=false; complete(); }
     });
 
+
+    // -------- voice guide --------
+    guide([
+      {say:"A request came in: find what changed on September 15th, 2024. Your lantern lights up shelves whose TOPIC is similar to the question. Walk into the library and look at the glow.",
+       when:()=>playerNear(0,-8,14)},
+      {say:"Notice something wrong? EVERY shelf about dates and changes glows almost the same — 0.551, 0.548, 0.545... Remember the date-blob from the meaning map? To a map of meanings, every date IS the same word. Pick whichever scroll looks best anyway and feed it to the READER.",
+       when:()=>altarFails>=1||answered},
+      {say:"See? The Reader talked beautifully about the wrong document. Close in meaning, wrong in fact — the most dangerous kind of failure, because it SOUNDS right. But a second tool just woke up by the entrance: the GREP SCANNER. Go switch to it.",
+       when:()=>mode==='scanner'},
+      {say:"The scanner is the opposite of the lantern: zero meaning, pure exact text — like Control-F. Look which single shelf lights up now. THAT is why real AI search uses BOTH tools together. Grab the right scroll and feed the Reader.",
+       when:()=>answered},
+      {say:"Found. Now deliver it down the corridor — and watch your CONTEXT bar. Helpful-looking junk will glue itself to you on the way. The more you carry, the dimmer your light gets — that is context rot, and it is measured and real. Use the SHREDDERS. Arrive carrying almost nothing.",
+       when:()=>corridorOn && ctx>=3},
+      {say:"Feel the fog thickening? Every extra paper spreads your attention thinner. Shred the junk — the gate at the end refuses to read a haystack."},
+    ]);
     return {};
   }
 };

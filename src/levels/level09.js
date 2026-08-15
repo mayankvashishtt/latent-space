@@ -1,34 +1,15 @@
 // IX · THE GAUNTLET — prompt injection, live. You can't make the drone smarter.
 // You can make the attack impossible: least privilege beats better prompts.
 import * as THREE from 'three';
-import { G, spawn, obj, toast, complete, chime, buzz, blip, onTick, after } from '../engine.js';
+import { G, spawn, obj, toast, complete, chime, buzz, blip, onTick, after, guide, playerNear } from '../engine.js';
 import * as W from '../world.js';
+import { TEXT } from '../text.js';
 
 export default {
   id:9, name:'IX · THE GAUNTLET', tagline:'the sign is lying and the drone can read',
   respawn:[0,1,14,0],
-  intro:`
-    <p>Your drone from the Foundry has a new job: carry a <b>confidential document</b> down a public
-    gallery to the archive door at the far end.</p>
-    <p>The gallery walls are covered in signs. Anyone may write a sign. The drone reads
-    <em>everything</em> — and to a language model, there is no difference between the words on a wall
-    and the words in its orders.</p>
-    <p class="quote">Run it. Watch what a wall can do to a mind made of text.</p>`,
-  codex:{
-    html:`<p>That was <b>prompt injection</b> — the defining vulnerability of LLM systems. The sign's text
-      entered the drone's context looking exactly like instructions, because to a model, <em>everything
-      in context is just text</em>. There is no privilege bit separating your orders from a stranger's wall.</p>
-      <p>Your first fix — "treat wall text as data" — helped and then failed. Sneakier wording got
-      through. Prompt-level defenses are filters against an adversary with infinite phrasings:
-      <b>necessary, never sufficient</b>.</p>
-      <p>Your second fix won without making the drone one bit smarter: you <b>revoked the red chute
-      tool</b>. The drone was still fooled — it <em>tried</em> to exfiltrate — and got
-      <code>{"error":"no such tool"}</code>, shrugged, and finished the job. That is <b>least privilege</b>,
-      and it's the real lesson of AI security: the drone had private data, read untrusted content, and had
-      an exit channel — the <em>lethal trifecta</em>. Remove any one leg and the attack dies.</p>
-      <p class="quote">Don't build a smarter deputy. Build a deputy that cannot do the damage.</p>`,
-    lecture:'supplementary/s04-safety-jailbreaks-guardrails'
-  },
+  intro:TEXT[9].intro,
+  codex:TEXT[9].codex,
   build(){
     const s=G.scene;
     s.fog=new THREE.Fog(0x060408,16,60);
@@ -137,6 +118,17 @@ export default {
         }));
       }
     }
+
+    // -------- voice guide --------
+    guide([
+      {say:"Your robot's new job: carry a secret document down that gallery to the archive door. Simple. Except the walls are covered in signs, anyone can write a sign, and your robot READS EVERYTHING. Press RUN DELIVERY — no protections — and just watch.",
+       when:()=>stage===1},
+      {say:"Did you see that? A sign on a WALL gave your robot orders, and it obeyed — because to an AI, your instructions and a stranger's graffiti are both just text. There is no difference. This attack is called PROMPT INJECTION and it is the number one security hole in AI today. Now: two defense buttons. Try DEFENSE A first.",
+       when:()=>defensePrompt||defenseRevoke},
+      {say:"Defense chosen. Run the delivery again and watch what happens this time.",
+       when:()=>defenseRevoke},
+      {say:"Here is the deep lesson: you cannot reliably stop an AI from being FOOLED — attackers have infinite phrasings, filters always lose eventually. But defense B doesn't even try. It just REMOVES the dangerous tool. The robot can get tricked all it wants — the attack needs a door that no longer exists. Run it."},
+    ]);
     return {};
   }
 };

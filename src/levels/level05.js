@@ -1,34 +1,15 @@
 // V · ATTENTION — distribute a budget that sums to 1; the sentence changes under you.
 // Then the causal glass, then the KV cache choice.
 import * as THREE from 'three';
-import { G, spawn, obj, toast, complete, chime, buzz, onTick, after } from '../engine.js';
+import { G, spawn, obj, toast, complete, chime, buzz, onTick, after, guide, playerNear } from '../engine.js';
 import * as W from '../world.js';
+import { TEXT } from '../text.js';
 
 export default {
   id:5, name:'V · ATTENTION', tagline:'a budget that always sums to one',
   respawn:[0,1,16,0],
-  intro:`
-    <p>A sentence stands before you as pillars of light:</p>
-    <p style="text-align:center"><code>The animal didn't cross the street because <b>IT</b> was too tired.</code></p>
-    <p>You are standing at <b>IT</b> — and IT must decide what it refers to. You hold exactly
-    <b>1.00</b> of attention. Spend it on the candidates in quarters. There are no refunds without a reset:
-    the budget always sums to one.</p>
-    <p class="quote">Choose where the meaning flows. Then watch one word change — and choose again.</p>`,
-  codex:{
-    html:`<p>You just performed <b>self-attention</b>. The pool that always summed to 1.00 is the softmax:
-      every token has a fixed budget of attention to distribute, and giving more to one word means
-      taking it from another. That single fact — the budget — is also why long contexts rot: more
-      competitors, thinner slices.</p>
-      <p>When "tired" became "wide," the right answer moved from ANIMAL to STREET — same sentence shape,
-      one word different. That's the whole point: a word's representation is <em>computed from context</em>,
-      not looked up. This is the mechanism that fixed the "one vector per word" problem.</p>
-      <p>The dark glass was the <b>causal mask</b>: futures scored at −∞ don't get "less attention" —
-      they are unreachable, because e<sup>−∞</sup> = 0. That's why training can't cheat and why generation works.</p>
-      <p>And the cache room: the old tokens' K and V never change — only your fresh Q does. Recomputing
-      them is pure waste. You chose the <b>KV cache</b>, and that choice is why the first token of every
-      chatbot reply is slow and the rest stream fast.</p>`,
-    lecture:'notes/week-04-transformers-part-2'
-  },
+  intro:TEXT[5].intro,
+  codex:TEXT[5].codex,
   build(){
     const s=G.scene;
     s.fog=new THREE.Fog(0x04060e,20,70);
@@ -71,7 +52,7 @@ export default {
       poolBarLbl.material=nl.material; poolBarLbl.scale.copy(nl.scale); }
     cands.forEach(c=>{
       W.button({x:c.x-1, z:-1.5, label:`+0.25 → ${c.wd.toUpperCase()}`, color:W.C.cyan, fn:()=>{
-        if(pool<0.24){ buzz(); toast('POOL EMPTY — softmax sums to 1. Nothing left to give.<br>RESET to redistribute.'); return; }
+        if(pool<0.24){ buzz(); toast('POOL EMPTY — your attention budget always adds up to exactly 1.<br>Press RESET to try a different split.'); return; }
         pool-=0.25; alloc[c.wd]+=0.25; poolText(); beamTo(c.x==-12?-12:0, alloc[c.wd]);
         toast(`attention(${c.wd}) = ${alloc[c.wd].toFixed(2)}`);
       }});
@@ -96,7 +77,7 @@ export default {
             obj('PHASE 2 — "wide": route the attention again · then CONFIRM');
           });
         } else {
-          toast('IT → STREET. The street was wide. <b>Context computed the meaning.</b>');
+          toast('IT → STREET. The street was wide. <b>Same word, new meaning — the surroundings decided.</b>');
           doorA.open(); obj('proceed north — through the causal glass');
         }
       } else { buzz(); toast(`with "${phase===1?'tired':'wide'}", IT does not mean that. Rethink the routing.`); }
@@ -146,6 +127,23 @@ export default {
     onTick(()=>{
       if(doorC.isOpen && G.player.pos.z<-66.5){ doorC.isOpen=false; complete(); }
     });
+
+    // -------- voice guide --------
+    guide([
+      {say:"Read the sentence made of pillars: The animal didn't cross the street because IT was too tired. Question: what does IT mean — the animal, or the street? Think about what was TIRED. Walk to the buttons.",
+       when:()=>playerNear(-6,0,8)},
+      {say:"You hold exactly ONE point of attention. Not more. Not less. This is the deepest rule in ChatGPT: attention always adds up to exactly one — giving more to one word means taking it from another. Spend your pool: press the button for the word IT should point to. All of it.",
+       when:()=>pool<=0.01},
+      {say:"Pool spent. Now press CONFIRM and see if you routed the meaning correctly.",
+       when:()=>phase===2},
+      {say:"Correct — the ANIMAL was tired. But wait... watch the sentence. One word is changing.",
+       when:()=>alloc.street>=0.5},
+      {say:"Now it says WIDE. Same sentence, one word different — and suddenly IT means the STREET. This is the whole magic: a word's meaning is computed fresh from its neighbors, every single time. Confirm your new routing.",
+       when:()=>G.player.pos.z<-24},
+      {say:"Walk the corridor. See the dark pillars behind glass? Those are FUTURE words. An AI predicting the next word is never allowed to peek ahead — not discouraged: mathematically IMPOSSIBLE, blocked at minus infinity. Read the MASK terminal if you like, then keep going.",
+       when:()=>G.player.pos.z<-44},
+      {say:"Last room. The gate needs the K and V values of the old words plus your fresh question. Look — the old values are already sitting there, CACHED, glowing blue. The old words never change, so their math never changes. So... would you recompute it all, or use the cache? Choose a button."},
+    ]);
     return {};
   }
 };

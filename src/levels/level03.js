@@ -1,31 +1,14 @@
 // III · THE TOKENIZER — run BPE by hand, then hit the strawberry wall.
 import * as THREE from 'three';
-import { G, spawn, obj, toast, complete, chime, buzz, onTick, hold, dropHeld } from '../engine.js';
+import { G, spawn, obj, toast, complete, chime, buzz, onTick, hold, dropHeld, guide, playerNear } from '../engine.js';
 import * as W from '../world.js';
+import { TEXT } from '../text.js';
 
 export default {
   id:3, name:'III · THE TOKENIZER', tagline:'what the model sees',
   respawn:[0,1,14,0],
-  intro:`
-    <p>Before any thought happens, text must become tokens — and the machine that decides the pieces
-    is in front of you, half-built.</p>
-    <p>Its corpus hangs in the air: <code>l o w &nbsp; l o w e r &nbsp; l o w e s t</code>.
-    Finish building its vocabulary the only way BPE knows how:
-    <b>merge the most frequent adjacent pair</b>. Three times.</p>
-    <p class="quote">Then a second room will ask you a question this machine has made almost impossible to answer.</p>`,
-  codex:{
-    html:`<p>You ran <b>Byte-Pair Encoding</b> — the exact algorithm that builds GPT-4's vocabulary.
-      Count adjacent pairs, merge the most frequent, repeat. Nobody designs the tokens;
-      <em>frequency does</em>. That's why real tokenizers split "artificial" into
-      <code>art·ificial</code> — statistics, not linguistics.</p>
-      <p>Then the monoliths: you were asked to count the R's in STRAWBERRY while seeing only
-      <code>[STR][AW][BERRY]</code> — token IDs, no letters. You needed a tool to crack them open.</p>
-      <p>So does the model. <b>It never sees letters at all.</b> The famous "count the r's in strawberry"
-      failure is not a reasoning failure — it's a <em>perception</em> failure. Asking was like asking
-      someone to count brushstrokes in a photo of a painting.</p>
-      <p class="quote">If the model can't see a pattern in the tokens, it can't learn the meaning underneath it.</p>`,
-    lecture:'notes/week-03-transformers-part-1'
-  },
+  intro:TEXT[3].intro,
+  codex:TEXT[3].codex,
   build(){
     const s=G.scene;
     s.fog=new THREE.Fog(0x04060e,18,60);
@@ -99,6 +82,7 @@ export default {
     const doorA=W.door({x:0,z:-17,axis:'x'});
     obj('ROOM A — <b>merge the most frequent adjacent pair</b> · 3 merges to build the vocabulary');
 
+    let triedMono=false, opened=0;
     // ---------------- ROOM B: STRAWBERRY ----------------
     // three opaque token monoliths
     const toks=[['STR',9821],['AW',675],['BERRY',19772]];
@@ -111,8 +95,8 @@ export default {
       W.label(new THREE.Vector3(x,4.9,-38),`token #${id}`,{size:.34,color:'#5f86ab'});
       mono.userData.tok=t; mono.userData.x=x; mono.userData.opened=false;
       mono.userData.interact={prompt:'detokenize (requires ray)', fn:()=>{
-        if(!hasRay){ buzz(); toast('The surface is sealed. Token IDs have no letters inside — <b>find the DETOKENIZER RAY</b>.'); return; }
-        if(mono.userData.opened) return; mono.userData.opened=true;
+        if(!hasRay){ triedMono=true; buzz(); toast('The surface is sealed. Token IDs have no letters inside — <b>find the DETOKENIZER RAY</b>.'); return; }
+        if(mono.userData.opened) return; mono.userData.opened=true; opened++;
         mono.material.opacity=.12; mono.material.transparent=true; mono.material.emissiveIntensity=.15;
         t.split('').forEach((ch,k)=>{
           const l=W.text(ch,{size:.7,color: ch==='R'?'#ff5c6a':'#cfe6ff',bold:true});
@@ -126,7 +110,7 @@ export default {
     W.label(new THREE.Vector3(0,5.5,-38),'place that many orbs on the altar',{size:.3,color:'#8fb8d8'});
 
     // detokenizer ray pickup
-    let hasRay=false;
+    let hasRay=false; 
     const rayM=new THREE.Mesh(new THREE.ConeGeometry(.3,1.1,8),W.mat(W.C.green,{emissive:W.C.green,ei:1.6}));
     rayM.rotation.z=Math.PI/2; rayM.position.set(11,1.4,-30); rayM.userData.baseY=1.4; rayM.userData.bob=.12; G.animated.push(rayM); s.add(rayM);
     W.label(new THREE.Vector3(11,2.5,-30),'DETOKENIZER RAY',{size:.3,color:'#5cff9d'});
@@ -136,7 +120,7 @@ export default {
     G.interactables.push(rayM);
 
     // orb dispenser + altar
-    let carried=0, placed=0;
+    let carried=0, placed=0; 
     const disp=W.button({x:-10,z:-30,label:'TAKE ORB',color:W.C.cyan,fn:()=>{
       if(carried>=5){ toast('hands full'); return; } carried++;
       toast(`carrying ${carried} orb${carried>1?'s':''}`); }});
@@ -161,6 +145,25 @@ export default {
     }};
     G.interactables.push(altar);
 
+
+    // -------- voice guide --------
+    guide([
+      {say:"Here is a secret: AI cannot read letters. Before it reads anything, a machine chops text into chunks called TOKENS. You are going to build that machine. Walk up to the floating letters.",
+       when:()=>playerNear(0,-2,7)},
+      {say:"They spell: low, lower, lowest. The pink dots between letters are GLUE buttons. The rule is dead simple: always glue the pair of letters that appears MOST OFTEN. Look — which pair shows up three times? Press E on it.",
+       when:()=>merges>=1},
+      {say:"That's it! The glued pair is now ONE token. This exact method — count, glue the winner, repeat — built ChatGPT's entire vocabulary from the whole internet. Nobody chose the chunks; counting did. Two more merges.",
+       when:()=>merges>=3},
+      {say:"Vocabulary built — 'low' is now a single chunk. Now walk through the door. The next room has a question for you.",
+       when:()=>triedMono||playerNear(0,-38,10)},
+      {say:"The wall asks: how many R's in STRAWBERRY? Easy... except look at the blocks. The word is chunked into STR, AW, BERRY — and the blocks are SEALED. Try pressing E on one.",
+       when:()=>triedMono},
+      {say:"Sealed shut. THIS is exactly what the AI sees — chunk numbers, zero letters. When people laugh at ChatGPT for failing this question, this is why: it is not stupid, it is BLIND. You, however, get a cheat the AI never gets. Find the green RAY on the right side.",
+       when:()=>hasRay},
+      {say:"Now crack open all three blocks and COUNT the R's with your own eyes.",
+       when:()=>opened>=3},
+      {say:"Count them — the red letters. Then take that many orbs from the dispenser on the left, carry them to the altar behind the blocks, and press E to place, then E again to submit."},
+    ]);
     return {};
   }
 };

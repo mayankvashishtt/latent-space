@@ -1,25 +1,14 @@
 // X · OUTPUT HEAD — a speedrun remix of everything, ending at the softmax gate.
 import * as THREE from 'three';
-import { G, spawn, obj, toast, complete, chime, buzz, blip, onTick, after, panel, loadLevel } from '../engine.js';
+import { G, spawn, obj, toast, complete, chime, buzz, blip, onTick, after, panel, loadLevel, guide } from '../engine.js';
 import * as W from '../world.js';
+import { TEXT } from '../text.js';
 
 export default {
   id:10, name:'X · OUTPUT HEAD', tagline:'the final forward pass',
   respawn:[0,1,10,0],
-  intro:`
-    <p>This is the last layer. Beyond it, the model emits its token — <em>you</em>.</p>
-    <p>Five chambers stand between you and the softmax gate. Each is a mechanism you have already
-    mastered, stripped to its essence. No hints this time.</p>
-    <p class="quote">Prove you understood — at speed.</p>`,
-  codex:{
-    html:`<p>Cut &middot; merge &middot; route &middot; match &middot; revoke &middot; sample. Six mechanisms,
-      one forward pass — and this time nothing was explained to you, because nothing needed to be.</p>
-      <p>That is the difference between having read about a thing and having <em>been</em> the thing.</p>
-      <p class="quote">The next token is yours.</p>
-      <p style="font-size:13px;color:#7fa8cc">Full curriculum, 38 lectures deep:
-      <a href="https://github.com/mayankvashishtt/ai-ml-bootcamp-archive" target="_blank">the course archive</a>.</p>`,
-    lecture:'supplementary/s07-sampling-and-decoding'
-  },
+  intro:TEXT[10].intro,
+  codex:TEXT[10].codex,
   build(){
     const s=G.scene;
     s.fog=new THREE.Fog(0x04060e,16,60);
@@ -156,6 +145,11 @@ export default {
           buttons:[{label:'Return to the Stream',gold:true,fn:()=>{ G.player.frozen=false; complete(); }}]});
       });
     }
+
+    // -------- voice guide: final test = silence --------
+    guide([
+      {say:"This is the final test — and my last words until you finish. Five rooms. Cut. Glue. Budget. Exact match. Remove the power. Then the softmax gate. No hints this time. You don't need them anymore. Go."},
+    ]);
     return {};
   }
 };

@@ -1,28 +1,14 @@
 // I · THE NEURON — linear separability, made physical. AND is one cut; XOR needs two.
 import * as THREE from 'three';
-import { G, spawn, obj, toast, complete, chime, buzz, onTick } from '../engine.js';
+import { G, spawn, obj, toast, complete, chime, buzz, onTick, guide, playerNear } from '../engine.js';
 import * as W from '../world.js';
+import { TEXT } from '../text.js';
 
 export default {
   id:1, name:'I · THE NEURON', tagline:'one cut is not enough',
   respawn:[0,1,14,0],
-  intro:`
-    <p>Four data points glow on the floor. <em>Orange</em> must be separated from <em>blue</em>.</p>
-    <p>Your only instrument is a <em>decision plane</em> — one straight luminous cut through space.
-    Rotate it. Slide it. Points on its bright side are classified <b>1</b>, the dark side <b>0</b>.</p>
-    <p class="quote">This is everything a single neuron can do. Find out where that stops being enough.</p>`,
-  codex:{
-    html:`<p>Room one was the <b>AND gate</b> — separable by one straight cut, exactly what a single
-      neuron computes: <code>activation(w·x + b)</code>. The plane's angle <em>is</em> the weights; its offset <em>is</em> the bias.</p>
-      <p>Room two was <b>XOR</b>. In 1969, Minsky &amp; Papert proved no single cut can ever solve it —
-      a result that helped freeze AI research for a decade. You just felt why: the orange points sit on
-      <em>opposite corners</em>.</p>
-      <p>Then you were handed a <em>second plane</em> and a rule for combining them — and suddenly the
-      impossible was easy. That combination is a <b>hidden layer</b>. Depth is not stacking for its own
-      sake: <em>depth is the ability to compose cuts</em>. Without a non-linearity between them, two cuts
-      collapse back into one — which is why activation functions are mandatory.</p>`,
-    lecture:'notes/week-02-neural-networks-from-scratch'
-  },
+  intro:TEXT[1].intro,
+  codex:TEXT[1].codex,
   build(){
     const s=G.scene;
     s.fog=new THREE.Fog(0x04060e,18,70);
@@ -36,6 +22,8 @@ export default {
       const blade=W.box(11,3.2,0.08,new THREE.MeshStandardMaterial({color, emissive:color, emissiveIntensity:.7, transparent:true, opacity:.32, side:THREE.DoubleSide}));
       blade.position.y=1.6; grp.add(blade);
       const spine=W.box(11,.08,.08,W.mat(color,{emissive:color,ei:1.6})); spine.position.y=0.06; grp.add(spine);
+      const sideA=W.text('◄ GOLD SIDE',{size:.34,color:'#ffd257'}); sideA.position.set(0,3.6,1.1); grp.add(sideA);
+      const sideB=W.text('BLUE SIDE ►',{size:.34,color:'#6ea8ff'}); sideB.position.set(0,3.6,-1.1); grp.add(sideB);
       grp.position.set(cx,0,cz); s.add(grp);
       return {grp, theta:0, offset:0, cx, cz,
         apply(){ grp.rotation.y=this.theta;
@@ -65,6 +53,7 @@ export default {
     planeConsoles(plA, -3.2, 9.5, '');
     W.label(new THREE.Vector3(0,4.6,-2),'ROOM A — AND · separate gold from blue',{size:.4,color:'#9fd8ff'});
     const doorA=W.door({x:0,z:-20,axis:'x'});
+    setTimeout(()=>toast('Watch the rings: <b style="color:#5cff9d">green</b> = correct side, <b style="color:#ff5c6a">red</b> = wrong side',5200),1200);
 
     // ---------- ROOM B: XOR ----------
     const ptsB = makePoints([[-D,-D,0],[-D,D,1],[D,-D,1],[D,D,0]], -37);
@@ -89,7 +78,7 @@ export default {
         toast('HIDDEN LAYER GRANTED — two planes, combined');
         obj('ROOM B — XOR: <b>bright side of BOTH planes = 1</b>'); }});
 
-    obj('ROOM A — rotate & slide the plane until all four points ring <b>green</b>');
+    obj('ROOM A — ROTATE & SLIDE the wall: <b>gold on its GOLD side, blue on its BLUE side</b> · all 4 rings green = door opens');
 
     onTick(dt=>{
       const pts = phase==='A'?ptsA:ptsB;
@@ -108,7 +97,7 @@ export default {
         if(stableT>1.2){
           if(phase==='A'){ phase='B'; stableT=0; doorA.open(); chime();
             toast('AND SOLVED — one cut was enough. Proceed north.');
-            obj('ROOM B — XOR: separate gold from blue. <b>Same single plane.</b>');
+            obj('ROOM B — same job, new layout: gold on the GOLD side. <b>Same single wall. Good luck.</b>');
           } else if(plB2){ complete(); }
           else if(!hintShown){ /* unreachable: single plane can't solve XOR */ }
         }
@@ -119,6 +108,25 @@ export default {
         setTimeout(()=>toast('Every rotation fails. The gold points are on opposite corners.<br>Something in this room knows why. Find the 1969 archive.',5200), 12000);
       }
     });
+
+    // -------- voice guide: say -> do -> next --------
+    const _t0A=plA.theta, _o0A=plA.offset;
+    const okCountA=()=>{ let n=0; for(const p of ptsA){ if((plA.side(p)>0?1:0)===p.lab) n++; } return n; };
+    guide([
+      {say:"See those four balls on the floor? Gold ones and blue ones. Walk down to the two buttons.",
+       when:()=>playerNear(-2.2,9.5,4.5)},
+      {say:"That wall of light can do exactly ONE thing: split the room into two sides. Press E on ROTATE and watch what happens.",
+       when:()=>plA.theta!==_t0A||plA.offset!==_o0A},
+      {say:"Look at the rings under the balls. Green ring means: that ball is on the correct side. Red means wrong. Your job: make all four green.",
+       when:()=>okCountA()>=3},
+      {say:"Three green! One stubborn ball left. Keep adjusting — ROTATE turns the wall, SLIDE moves it sideways.",
+       when:()=>phase==='B'},
+      {say:"Solved — one straight cut was enough. That wall is a NEURON: one brain cell of an AI, and one cut is ALL it can do. Now go north. Same tool, new balls. Try it.",
+       when:()=>G.player.pos.z<-22 && (plB1.theta!==0||plB1.offset!==0)},
+      {say:"Keep trying. Really. Rotate it all the way around if you want.",
+       when:()=>plB2!==null},
+      {say:"Right — it is IMPOSSIBLE. Gold sits on opposite corners; no single straight cut can ever separate them. In 1969 this exact discovery nearly killed AI research. But you found the fix: a SECOND wall. Now a ball counts as gold-side only if it is on the bright side of BOTH walls. Two cuts together can bend. Solve it."},
+    ]);
     return {};
   }
 };

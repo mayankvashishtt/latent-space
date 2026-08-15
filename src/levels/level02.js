@@ -1,34 +1,14 @@
 // II · DESCENT — you ARE gradient descent: fog-blind on a loss landscape, feeling for downhill.
 import * as THREE from 'three';
-import { G, spawn, obj, toast, complete, hudBar, onTick, buzz, blip, panel } from '../engine.js';
+import { G, spawn, obj, toast, complete, hudBar, onTick, buzz, blip, panel, guide, playerNear } from '../engine.js';
 import * as W from '../world.js';
+import { TEXT } from '../text.js';
 
 export default {
   id:2, name:'II · DESCENT', tagline:'find the minimum you cannot see',
   respawn:[0,20,66,0],
-  intro:`
-    <p>This terrain is a <em>loss landscape</em> — height is error. Somewhere out in the fog lies the
-    <b>global minimum</b>, the point of least wrongness. Reach it.</p>
-    <p>You cannot see more than a few metres. But at your feet glows an arrow: the <em>gradient</em>,
-    always pointing downhill. It is the only sense a training run has.</p>
-    <p>Your <b>compute budget</b> drains as you move — climbing burns it three times faster.
-    Choose your step mode with <b>1 / 2 / 3</b>: careful, normal, or <em>reckless</em>
-    (fast, but momentum carries you — you will overshoot).</p>
-    <p class="quote">Warning: not every valley is the bottom.</p>`,
-  codex:{
-    html:`<p>You just executed the algorithm that trains every neural network in existence:
-      <em>feel the slope, step downhill, repeat</em>. No map, no vision — only the local gradient.
-      That is genuinely all a training run has.</p>
-      <p>The step modes were the <b>learning rate</b>. Careful never arrives before the budget dies;
-      reckless overshoots the valley and slides up the far wall — exactly why loss curves explode when
-      LR is too high, and crawl when it's too low.</p>
-      <p>The decoy bowls were <b>local minima</b>. In real high-dimensional landscapes there are millions
-      of them — and the field's surprising discovery is that most are <em>good enough</em>, which is why
-      training works at all. The kick-pad that threw you out? That's <b>momentum</b>, and it's why optimizers carry velocity.</p>
-      <p>Your compute budget was real too: every training run has one, and "would converge eventually" is
-      indistinguishable from failure.</p>`,
-    lecture:'notes/week-02-neural-networks-from-scratch'
-  },
+  intro:TEXT[2].intro,
+  codex:TEXT[2].codex,
   build(){
     const s=G.scene;
     s.fog=new THREE.Fog(0x05070f, 3, 16);          // heavy fog: local information only
@@ -133,6 +113,23 @@ export default {
         toast('LOSS ≈ 0.02 — converged'); setTimeout(()=>complete(),900); }
     });
 
+
+    // -------- voice guide --------
+    guide([
+      {say:"Dark, isn't it? This whole landscape is a map of MISTAKES — the higher the ground, the more wrong the AI is. Somewhere out there is the deepest valley. Look at your feet: the green arrow always points downhill. Take a few steps where it points.",
+       when:()=>!playerNear(0,66,9)},
+      {say:"Good. That arrow is called the GRADIENT — and it is the ONLY thing a real AI can sense while training. No map. No view. Just the slope underfoot. Now watch your energy bar as you walk: uphill drains it three times faster.",
+       when:()=>budget<0.93},
+      {say:"Energy is your compute budget — real training runs have one too. Now try your speed modes. Press 3.",
+       when:()=>mode===3},
+      {say:"Whoa — slippery! That is a learning rate that is too BIG: you move fast but slide right past the goal. This is exactly how real training explodes. Now press 1.",
+       when:()=>mode===1},
+      {say:"Careful mode: precise, but you would run out of budget before arriving. Too small a learning rate fails too — just slower. Press 2 and let's move.",
+       when:()=>mode===2},
+      {say:"Perfect. Follow the arrow downhill. One warning: some valleys FEEL like the bottom but are not — if you find a RED crystal, you are trapped in a fake valley. Look for the pink pad next to it: that is MOMENTUM, and it will throw you out.",
+       when:()=>doneFlag || pads.some(p=>playerNear(p.x,p.z,9)) || playerNear(0,-58,16)},
+      {say:"You're close to something. If it glows RED — fake bottom, use the pad. If it glows GOLD — that is the true minimum. Go touch it."},
+    ]);
     return { dispose(){ removeEventListener('keydown',keyHandler); G.groundSampler=null; G.player.speedMul=1; G.player.friction=1; } };
   }
 };

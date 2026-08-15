@@ -1,28 +1,14 @@
 // IV · EMBEDDING SPACE — meaning as geometry: file misplaced words, then RIDE king−man+woman.
 import * as THREE from 'three';
-import { G, spawn, obj, toast, complete, chime, buzz, onTick, hold, dropHeld } from '../engine.js';
+import { G, spawn, obj, toast, complete, chime, buzz, onTick, hold, dropHeld, guide, playerNear } from '../engine.js';
 import * as W from '../world.js';
+import { TEXT } from '../text.js';
 
 export default {
   id:4, name:'IV · EMBEDDING SPACE', tagline:'meaning is a place',
   respawn:[0,1,30,0],
-  intro:`
-    <p>This is where the model keeps <em>meaning</em>: every word is a point, and distance is similarity.
-    Nobody arranged this space — training did.</p>
-    <p>Three words have been filed in the wrong clusters. Carry each home.</p>
-    <p class="quote">Then stand on KING, and learn what it means to do arithmetic on ideas.</p>`,
-  codex:{
-    html:`<p>You just used the property that makes embeddings work: <b>similar meaning = nearby point</b>.
-      "Puppy" belonged with the animals not because of its letters, but because of where it <em>sits</em>.</p>
-      <p>Then you rode the famous equation: <code>KING − MAN + WOMAN ≈ QUEEN</code>. Relationships are
-      <em>directions</em> — the male→female direction is the same vector everywhere in the space, so you
-      can add and subtract concepts like coordinates. Nobody designed that. It fell out of training.</p>
-      <p>And the trembling blob of dates? To a space built on <em>meaning</em>, every date means the same
-      thing: "a date." <code>2024-09-15</code> and <code>2024-03-22</code> are nearly the same point.
-      Remember that blob when you reach the Archive — it is exactly why semantic search fails on
-      exact identifiers.</p>`,
-    lecture:'notes/week-03-transformers-part-1'
-  },
+  intro:TEXT[4].intro,
+  codex:TEXT[4].codex,
   build(){
     const s=G.scene;
     s.background=new THREE.Color(0x02030a);
@@ -66,13 +52,13 @@ export default {
       {word:'bus',   from:{x:-24,z:2},home:'VEHICLES'},
       {word:'cake',  from:{x:3,z:-24},home:'FOOD'},
     ];
-    let filed=0, carrying=null;
+    let filed=0, carrying=null, pickedOnce=false;
     misplaced.forEach(mp=>{
       const t=W.text(mp.word,{size:.6,color:'#ff5c6a',bold:true});
       t.position.set(mp.from.x,1.8,mp.from.z); t.userData.baseY=1.8; t.userData.bob=.15; G.animated.push(t); s.add(t);
       t.userData.interact={prompt:`pick up "${mp.word}" (it doesn't belong here)`, fn:()=>{
         if(carrying){ toast('already carrying a word'); return; }
-        carrying=mp; hold(t);
+        carrying=mp; hold(t); pickedOnce=true;
         const ix=G.interactables.indexOf(t); if(ix>=0)G.interactables.splice(ix,1);
         obj(`carry <b>"${mp.word}"</b> to the cluster where it belongs · press E near the right ring`);
       }};
@@ -151,6 +137,21 @@ export default {
       });
       W.label(new THREE.Vector3(R.x-5.5,3.6,R.z+5.5),'CHOOSE TWO VECTORS · KING _ _ = ?',{size:.34,color:'#9fd8ff'});
     }
+
+    // -------- voice guide --------
+    guide([
+      {say:"Welcome to the map of MEANING. Every word an AI knows lives HERE — as a location. Look around: animals cluster together, vehicles together, food together. Similar meaning means close together. Walk toward any glowing circle.",
+       when:()=>playerNear(-24,-6,10)||playerNear(24,-6,10)||playerNear(0,8,10)||playerNear(0,-30,12)},
+      {say:"Now — three words are glowing RED. They got filed in the WRONG neighborhood. Find one and press E to pick it up.",
+       when:()=>pickedOnce},
+      {say:"Got it. Carry it to the circle where its MEANING belongs, stand inside the ring, and press E to drop it. The circle itself will judge you.",
+       when:()=>filed>=1},
+      {say:"Accepted! Notice: the circle didn't care about spelling — only about where the word BELONGS. That is how AI stores meaning: position, not letters. File the other two.",
+       when:()=>filed>=3},
+      {say:"All filed. Now for one of the most beautiful tricks in all of AI. A platform just rose on the word KING, in the royalty circle. Go stand on it.",
+       when:()=>playerNear(-4.2,-30,3.5)},
+      {say:"Because meanings are positions, you can do MATH on them. King, minus man, plus woman, equals...? Use the buttons to pick exactly those two vectors: MINUS MAN, then PLUS WOMAN. Choose wrong and you'll drift into the void between meanings."},
+    ]);
     return {};
   }
 };

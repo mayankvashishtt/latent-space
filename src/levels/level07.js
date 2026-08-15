@@ -1,32 +1,15 @@
 // VII · AGENT FOUNDRY — you can't reach the key. Build the drone's harness and watch it try.
 // Bad tool descriptions = confused drone. Errors returned as observations = recovery.
 import * as THREE from 'three';
-import { G, spawn, obj, toast, complete, chime, buzz, blip, onTick, after } from '../engine.js';
+import { G, spawn, obj, toast, complete, chime, buzz, blip, onTick, after, guide, playerNear } from '../engine.js';
 import * as W from '../world.js';
+import { TEXT } from '../text.js';
 
 export default {
   id:7, name:'VII · AGENT FOUNDRY', tagline:'the loop is the intelligence',
   respawn:[0,1,14,0],
-  intro:`
-    <p>Behind unbreakable glass sits a sealed vault, a key on a pedestal — and a dormant drone.</p>
-    <p>You will never touch that key. The drone will. But the drone knows <em>nothing</em> except what
-    its harness tells it: which tools it has, and what their descriptions say.</p>
-    <p class="quote">Write the harness. Run the loop. Watch what your descriptions actually taught it.</p>`,
-  codex:{
-    html:`<p>You just built an <b>agent harness</b> — and discovered that the model was never the problem.</p>
-      <p>With the vague description ("does stuff with things"), the drone picked wrong tools, flailed, and
-      hit its iteration cap. Same drone, same "intelligence." With the precise description, it planned
-      cleanly: scan → grab → unlock. <b>Tool descriptions are prompt engineering</b> — they are the only
-      thing the model has when it chooses.</p>
-      <p>Notice what happened at the locked vault on the good run: the tool returned
-      <code>{"error": "vault requires the brass key"}</code> — and the drone <em>read the error and
-      changed plan</em>. An exception would have killed it; an <b>error returned as an observation</b>
-      taught it. That single design decision is the most important pattern in agent engineering.</p>
-      <p>And the loop itself: think → act → observe, repeat, with a hard iteration cap. That's the whole
-      architecture of Claude Code — about 60 lines of Python around a model. The capability lives in
-      the loop, not in the tool count.</p>`,
-    lecture:'notes/week-08-from-apis-to-agents'
-  },
+  intro:TEXT[7].intro,
+  codex:TEXT[7].codex,
   build(){
     const s=G.scene;
     s.fog=new THREE.Fog(0x04060e,18,60);
@@ -72,11 +55,11 @@ export default {
       <p>Select this description for the scan tool?</p>`,
       onOpen:()=>{ cfg.scanDesc='precise'; toast('scan description set: <b>precise</b>'); }});
 
-    let running=false, solved=false;
+    let running=false, solved=false, ranOnce=false;
     W.button({x:0,z:9,label:'RUN THE LOOP',color:W.C.green,fn:()=>{
       if(running||solved) return;
       if(!cfg.scanDesc){ buzz(); toast('choose a description for the scan tool first'); return; }
-      running=true; tickerLines.forEach(l=>s.remove(l)); tickerLines.length=0;
+      running=true; ranOnce=true; tickerLines.forEach(l=>s.remove(l)); tickerLines.length=0;
       runSim(cfg.scanDesc==='precise');
     }});
     obj('Configure the drone: pick a <b>scan description</b>, then <b>RUN THE LOOP</b>');
@@ -127,6 +110,21 @@ export default {
         });
       }
     }
+
+    // -------- voice guide --------
+    guide([
+      {say:"See the room behind the glass? A key, a locked vault, and a sleeping robot. You will NEVER go in there. The robot does everything — and here is the catch: it only knows what its tool descriptions tell it. Walk to the two DESCRIPTION terminals.",
+       when:()=>playerNear(-9,8,6)},
+      {say:"You are writing the robot's instruction manual. Read both descriptions for its SCAN tool — one is lazy, one is clear. Pick either one. Honestly? Pick the lazy one first. Watching things fail teaches more.",
+       when:()=>cfg.scanDesc!==null},
+      {say:"Description chosen. Now press RUN THE LOOP and watch the big screen. You'll see the robot's actual thoughts: think, act, observe, repeat.",
+       when:()=>ranOnce},
+      {say:"Watch closely. Every line on that screen is the loop: THOUGHT, then ACTION, then OBSERVATION of what happened. This exact loop is how every AI agent on earth works — including the ones that write code.",
+       when:()=>solved || (!running && ranOnce && cfg.scanDesc==='vague')},
+      {say:"It failed — but look WHY. The robot wasn't stupid; it was BLIND. 'Does stuff with things' told it nothing, so it guessed. And notice: when it hit the locked vault, the error came back as a MESSAGE it could read, not a crash. Now fix the description and run again.",
+       when:()=>solved},
+      {say:"Three moves: scan, grab, unlock. Same robot. Same brain. Better words. When an AI agent seems dumb, check its tool descriptions before blaming the AI — that is real engineering advice."},
+    ]);
     return {};
   }
 };
