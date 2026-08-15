@@ -1,5 +1,6 @@
 // LATENT SPACE — entry point.
 import { boot } from './engine.js';
+import './map.js';
 import hub from './levels/hub.js';
 import l1 from './levels/level01.js';
 import l2 from './levels/level02.js';
