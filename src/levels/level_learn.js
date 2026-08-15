@@ -97,9 +97,22 @@ export default {
       });
     }
     // H anywhere in this chamber = show me
+    function breadcrumbs(){
+      const P=G.player.pos;
+      toast('Gold lights mark the way — the beam on the horizon is the goal.',3600);
+      const crumbs=[];
+      for(let k=1;k<=12;k++){
+        const t=k/12, x=P.x+(0-P.x)*t, z=P.z+(GOALZ-P.z)*t;
+        const h=G.groundSampler? (G.groundSampler(x,z)??P.y) : P.y;
+        const c=new THREE.Mesh(new THREE.SphereGeometry(.32,10,10),W.mat(W.C.gold,{emissive:W.C.gold,ei:1.8}));
+        c.position.set(x,h+1.1,z); s.add(c); crumbs.push(c);
+        const l=new THREE.PointLight(W.C.gold,4,8); l.position.copy(c.position); s.add(l); crumbs.push(l);
+      }
+      setTimeout(()=>crumbs.forEach(c=>s.remove(c)), 14000);
+    }
     G.showMe=()=>{ if(phase==='A') solveAct1();
       else if(act<2.5) solveAct2();
-      else toast('Nothing to auto-solve here — just follow the arrow downhill.'); };
+      else breadcrumbs(); };
     const mkShowBtn=(x,z,fn)=>{
       W.button({x,z,y:Y,label:'SHOW ME · or press H',color:W.C.green,fn});
       const c=W.beacon(x,Y+2.6,z,W.C.green,.38);
@@ -133,6 +146,8 @@ export default {
     // exit ledge over the void
     W.ground(10,7,{y:Y,cz:-44.5});
     W.label(new THREE.Vector3(0,Y+3.4,-46),'⬇ THE VALLEY OF TRAINING ⬇',{size:.46,color:'#ffd257',bold:true});
+    W.label(new THREE.Vector3(0,Y+1.6,-47.4),'JUMP OFF HERE',{size:.34,color:'#5cff9d',bold:true});
+    { const edge=W.box(9,.12,.3,W.mat(W.C.green,{emissive:W.C.green,ei:1.6})); edge.position.set(0,Y+.06,-47.7); s.add(edge); }
 
     // ================= ACT 3 — DESCENT (the loss landscape) =================
     const TZC=-130;   // terrain z-center; region z in [-45,-215] — starts under the ledge
@@ -159,11 +174,19 @@ export default {
     const shaft=W.box(.1,.1,1.6,W.mat(W.C.green,{emissive:W.C.green,ei:2})); shaft.position.z=-0.8;
     const tip=new THREE.Mesh(new THREE.ConeGeometry(.28,.6,10),W.mat(W.C.green,{emissive:W.C.green,ei:2}));
     tip.rotation.x=-Math.PI/2; tip.position.z=-1.8;
-    arrow.add(shaft,tip); arrow.visible=false; s.add(arrow);
+    arrow.add(shaft,tip); arrow.scale.set(1.7,1.7,1.7); arrow.visible=false; s.add(arrow);
+    const arrowL=new THREE.PointLight(W.C.green,6,10); arrow.add(arrowL);
 
     // goal + decoys + pads
     const GOALZ=TZC-52;
     W.beacon(0,H(0,GOALZ)+1.4,GOALZ,W.C.gold,.8);
+    { // beam of light — visible through the fog, always tells you WHERE
+      const beam=new THREE.Mesh(new THREE.CylinderGeometry(.7,1.6,90,12,1,true),
+        new THREE.MeshBasicMaterial({color:W.C.gold,transparent:true,opacity:.22,side:THREE.DoubleSide,depthWrite:false,fog:false}));
+      beam.position.set(0,H(0,GOALZ)+45,GOALZ); s.add(beam);
+      beam.userData.spin=.4; G.animated.push(beam);
+      const gl=new THREE.PointLight(W.C.gold,30,60); gl.position.set(0,H(0,GOALZ)+6,GOALZ); s.add(gl);
+    }
     W.label(new THREE.Vector3(0,H(0,GOALZ)+3.4,GOALZ),'GLOBAL MINIMUM',{size:.55,color:'#ffd257',bold:true});
     const mkDecoy=(x,zz,name)=>{ const z=TZC+zz;
       W.beacon(x,H(x,z)+1.2,z,W.C.red,.55);
@@ -220,7 +243,7 @@ export default {
       // ----- detect the drop -----
       if(!landed && G.player.pos.z<-46 && G.player.pos.y<Y-4){
         landed=true; act=3;
-        s.fog.near=3.5; s.fog.far=17;                     // the fog of training
+        s.fog.near=8; s.fog.far=36;                      // foggy, but navigable
         bar=hudBar('compute','COMPUTE BUDGET'); bar.set(1);
         lrBar=hudBar('lr','STEP MODE — 2 · NORMAL'); lrBar.set(0.55);
         arrow.visible=true;
@@ -284,7 +307,7 @@ export default {
        say:"Beautiful. But here's the thing — YOU positioned those cuts by hand. I have billions of them. Nobody positions mine by hand. Want to feel how they actually get set? The gold door is open. Walk to the ledge... and step off. Trust me. Sort of.",
        when:()=>landed},
       {who:'nova', task:'Follow the green arrow DOWNHILL to the gold light',
-       say:"Welcome to the valley of training. This landscape is made of MISTAKES — height is error, and somewhere deep in the fog is the point of least wrongness. The green arrow at your feet always points downhill. It's called the gradient, and it is the only sense a training run has. Follow it.",
+       say:"Welcome to the valley of training. This whole landscape is made of MISTAKES — the height of the ground is how wrong the AI is. See that gold beam of light far ahead? That is the deepest valley — the best possible settings. The fog means you can never see the map, only the slope under your feet: the green arrow. It is called the gradient, and it is the ONLY sense a training run has. Follow it toward the beam.",
        when:()=>budget<0.94},
       {who:'bit', task:'Try step modes: press 3, then 1, then settle on 2',
        say:"Watch your compute budget — climbing costs triple. And try your step sizes: press 3 for reckless. Go on. I want you to feel what a too-big learning rate does.",
