@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>LATENT SPACE</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root{
+    --cy:#54e0ff; --mg:#ff4fd8; --gd:#ffd257; --bg:#04060e;
+    --panel:#0a1020ee; --edge:#1c3350;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%;background:var(--bg);overflow:hidden;font-family:"Segoe UI",system-ui,-apple-system,sans-serif;color:#cfe6ff}
+  #c{position:fixed;inset:0;display:block}
+  /* ---------- HUD ---------- */
+  #hud{position:fixed;inset:0;pointer-events:none;z-index:5}
+  #xh{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:6px;height:6px;border-radius:50%;
+      background:#fff9;box-shadow:0 0 8px #54e0ff88;transition:transform .12s}
+  #xh.on{transform:translate(-50%,-50%) scale(2.2);background:var(--cy)}
+  #prompt{position:absolute;left:50%;top:57%;transform:translateX(-50%);font-size:15px;letter-spacing:.12em;
+      color:var(--cy);text-shadow:0 0 12px #54e0ff66;opacity:0;transition:opacity .15s;text-transform:uppercase}
+  #obj{position:absolute;left:26px;top:22px;max-width:420px;font-size:13px;letter-spacing:.14em;text-transform:uppercase;
+      color:#9fd8ff;border-left:2px solid var(--cy);padding:6px 0 6px 12px;text-shadow:0 0 10px #000}
+  #obj b{color:#fff}
+  #lvlname{position:absolute;right:26px;top:22px;text-align:right;font-size:12px;letter-spacing:.3em;color:#6f9fc8;text-transform:uppercase}
+  #toast{position:absolute;left:50%;bottom:110px;transform:translateX(-50%);font-size:15px;letter-spacing:.1em;
+      color:#fff;background:#0a1020cc;border:1px solid var(--edge);padding:10px 22px;border-radius:4px;
+      opacity:0;transition:opacity .25s;max-width:70vw;text-align:center}
+  #bars{position:absolute;left:26px;bottom:26px;display:flex;flex-direction:column;gap:10px}
+  .bar{width:230px}
+  .bar .lb{font-size:10px;letter-spacing:.25em;color:#8fb8d8;text-transform:uppercase;margin-bottom:4px}
+  .bar .tr{height:8px;background:#0d1526;border:1px solid var(--edge);border-radius:3px;overflow:hidden}
+  .bar .fl{height:100%;background:linear-gradient(90deg,var(--cy),var(--mg));width:100%;transition:width .15s}
+  /* ---------- Panel ---------- */
+  #panelWrap{position:fixed;inset:0;display:none;align-items:center;justify-content:center;z-index:20;
+      background:radial-gradient(ellipse at center,#02040acc 0%,#020408ee 100%)}
+  #panel{width:min(680px,92vw);max-height:84vh;overflow-y:auto;background:var(--panel);border:1px solid var(--edge);
+      border-top:2px solid var(--cy);border-radius:6px;padding:34px 40px;box-shadow:0 0 60px #54e0ff22}
+  #panel h1{font-size:24px;letter-spacing:.3em;color:#fff;text-transform:uppercase;font-weight:600}
+  #panel h2{font-size:12px;letter-spacing:.35em;color:var(--cy);text-transform:uppercase;margin:6px 0 18px;font-weight:400}
+  #panel .bd{font-size:15px;line-height:1.75;color:#c4dcf2}
+  #panel .bd p{margin:0 0 12px}
+  #panel .bd em{color:var(--gd);font-style:normal}
+  #panel .bd code{background:#0d1830;padding:1px 7px;border-radius:3px;color:var(--cy);font-family:ui-monospace,Menlo,monospace;font-size:13px}
+  #panel .bd .quote{border-left:2px solid var(--mg);padding-left:14px;color:#e8d8f5;margin:14px 0}
+  #panel .bd a{color:var(--cy)}
+  #panel .btns{margin-top:26px;display:flex;gap:12px;flex-wrap:wrap}
+  #panel button{pointer-events:auto;background:#0d1830;border:1px solid var(--cy);color:var(--cy);padding:11px 26px;
+      font-size:13px;letter-spacing:.2em;text-transform:uppercase;cursor:pointer;border-radius:3px;font-family:inherit;transition:all .15s}
+  #panel button:hover{background:var(--cy);color:#04060e;box-shadow:0 0 18px #54e0ff66}
+  #panel button.gold{border-color:var(--gd);color:var(--gd)}
+  #panel button.gold:hover{background:var(--gd);color:#04060e}
+  /* ---------- Menu ---------- */
+  #menu{position:fixed;inset:0;z-index:30;display:flex;flex-direction:column;align-items:center;justify-content:center;
+      background:radial-gradient(ellipse at 50% 40%,#0a1428 0%,#04060e 70%);cursor:pointer}
+  #menu h1{font-size:min(9vw,84px);letter-spacing:.42em;font-weight:200;color:#fff;text-indent:.42em;
+      text-shadow:0 0 40px #54e0ffaa,0 0 90px #ff4fd844;animation:pulse 3.4s ease-in-out infinite}
+  @keyframes pulse{0%,100%{opacity:.92}50%{opacity:1;text-shadow:0 0 60px #54e0ffdd,0 0 120px #ff4fd866}}
+  #menu h2{margin-top:14px;font-size:13px;letter-spacing:.5em;color:#7fb6de;text-transform:uppercase;text-indent:.5em}
+  #menu .start{margin-top:64px;font-size:15px;letter-spacing:.3em;color:var(--cy);animation:blink 1.6s infinite}
+  @keyframes blink{50%{opacity:.25}}
+  #menu .ctl{margin-top:46px;font-size:12px;letter-spacing:.15em;color:#5f86ab;line-height:2.1;text-align:center}
+  #menu .ctl b{color:#a8d4f5;background:#0d1830;padding:1px 8px;border-radius:3px;border:1px solid var(--edge)}
+  #fade{position:fixed;inset:0;background:#000;z-index:15;pointer-events:none;opacity:0;transition:opacity .6s}
+</style>
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+}}
+</script>
+</head>
+<body>
+<canvas id="c"></canvas>
+
+<div id="hud">
+  <div id="xh"></div>
+  <div id="prompt"></div>
+  <div id="obj"></div>
+  <div id="lvlname"></div>
+  <div id="toast"></div>
+  <div id="bars"></div>
+</div>
+
+<div id="panelWrap"><div id="panel">
+  <h1 id="pTitle"></h1><h2 id="pSub"></h2>
+  <div class="bd" id="pBody"></div>
+  <div class="btns" id="pBtns"></div>
+</div></div>
+
+<div id="menu">
+  <h1>LATENT SPACE</h1>
+  <h2>a game played inside a neural network</h2>
+  <div class="start">— click to wake the model —</div>
+  <div class="ctl">
+    <b>W A S D</b> move &nbsp;·&nbsp; <b>MOUSE</b> look &nbsp;·&nbsp; <b>SPACE</b> jump &nbsp;·&nbsp;
+    <b>E</b> interact &nbsp;·&nbsp; <b>SHIFT</b> run<br>
+    desktop + keyboard required · progress saves automatically
+  </div>
+</div>
+
+<div id="fade"></div>
+<script type="module" src="./src/main.js"></script>
+</body>
+</html>
