@@ -77,13 +77,13 @@ export default {
         if(e>=1){ G.ticks.splice(G.ticks.indexOf(fn),1); then&&then(); } };
       G.ticks.push(fn);
     }
-    W.button({x:4.8,z:7,y:Y,label:'STUCK? SHOW ME',color:W.C.green,fn:()=>{
+    function solveAct1(){
       if(solving||phase!=='A') return; solving=true;
       toast('Watch the wall — and watch the gold glow follow it.',3200);
       animPlane(plA, Math.PI/4, 2.7, 3.2, ()=>{ solving=false;
         toast('The glow now covers ONLY the gold ball. One cut was enough — for THIS pattern.',4200); });
-    }});
-    W.button({x:6.2,z:-19,y:Y,label:'STUCK? SHOW ME',color:W.C.green,fn:()=>{
+    }
+    function solveAct2(){
       if(solving||phase!=='B') return; solving=true;
       if(!plB2){
         toast('First: the 1969 archive grants the second wall…',2600);
@@ -95,7 +95,18 @@ export default {
         animPlane(plB2, Math.PI/4+Math.PI, -2.7, 3.2, ()=>{ solving=false;
           toast('See the glowing CORRIDOR between them? Both golds inside, both blues outside.<br><b>Two cuts made a shape one cut never could. That is a hidden layer.</b>',5600); });
       });
-    }});
+    }
+    // H anywhere in this chamber = show me
+    G.showMe=()=>{ if(phase==='A') solveAct1();
+      else if(act<2.5) solveAct2();
+      else toast('Nothing to auto-solve here — just follow the arrow downhill.'); };
+    const mkShowBtn=(x,z,fn)=>{
+      W.button({x,z,y:Y,label:'SHOW ME · or press H',color:W.C.green,fn});
+      const c=W.beacon(x,Y+2.6,z,W.C.green,.38);
+      W.label(new THREE.Vector3(x,Y+3.5,z),'STUCK?',{size:.4,color:'#5cff9d',bold:true});
+    };
+    mkShowBtn(4.8,7,solveAct1);
+    mkShowBtn(6.2,-19,solveAct2);
 
     // ================= ACT 2 — THE IMPOSSIBLE CUT (XOR) =================
     W.room({w:24,h:6,d:26,cz:-28,y:Y,gaps:['s','n'],accent:W.C.magenta});
@@ -181,7 +192,7 @@ export default {
       if(act<3){ zoneA.update(); zoneB.update(); }
       if(phase==='B' && act<2.5){ stuckT+=dt;
         if(stuckT>75){ stuckT=-9999;
-          toast('No shame in it — press the green <b>STUCK? SHOW ME</b> button and watch the solution happen.',5200); } }
+          toast('No shame in it — press <b>H</b> (or the green SHOW ME button) and watch the solution happen.',5200); } }
       // ----- classification feedback -----
       if(act<3){
         const pts = phase==='A'?ptsA:ptsB;

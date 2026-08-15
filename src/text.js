@@ -14,7 +14,7 @@ export const TEXT = {
   find their place.</b></p>
   <p>Three acts: make the cut · meet the cut that can't exist · then step off the edge and
   <em>become</em> the training algorithm.</p>
-  <p class="quote">Follow NOVA and BIT. The TASK card (top-left) always says what to do next.</p>`,
+  <p class="quote">Follow NOVA and BIT. The TASK card (top-left) always says what to do next.<br>Truly stuck? Press <b>H</b> and the room will solve itself in front of you.</p>`,
   codex:{
     html:`<p><b>What you just did, in plain words:</b></p>
     <p><b>Act 1:</b> that wall was a <b>neuron</b> — one cell of an AI. One straight cut: this side

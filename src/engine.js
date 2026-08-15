@@ -34,7 +34,7 @@ export function boot(levels){
   });
 
   // input
-  addEventListener('keydown', e=>{ G.keys[e.code]=true; if(e.code==='KeyE') tryInteract(); if(e.code==='KeyV') voiceToggle(); if(e.code==='KeyM'&&G.started&&G.openMap) G.openMap(); });
+  addEventListener('keydown', e=>{ G.keys[e.code]=true; if(e.code==='KeyE') tryInteract(); if(e.code==='KeyV') voiceToggle(); if(e.code==='KeyM'&&G.started&&G.openMap) G.openMap(); if(e.code==='KeyH'&&G.started&&!panelOpen()&&G.showMe) G.showMe(); });
   addEventListener('keyup',   e=>{ G.keys[e.code]=false; });
   document.addEventListener('mousemove', e=>{
     if(!G.locked || G.player.frozen) return;
@@ -74,7 +74,7 @@ export function loadLevel(i){
     const L = G.levels[i];
     G.scene = new THREE.Scene();
     G.scene.background = new THREE.Color(0x04060e);
-    G.groundSampler = null; G.player.friction = 1;
+    G.groundSampler = null; G.player.friction = 1; G.showMe = null;
     G.colliders.length=0; G.interactables.length=0; G.animated.length=0;
     G.ticks.length=0; G.tweens.length=0;
     document.getElementById('bars').innerHTML='';
