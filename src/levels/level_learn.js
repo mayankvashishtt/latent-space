@@ -97,9 +97,23 @@ export default {
       });
     }
     // H anywhere in this chamber = show me
+    function flyToGoal(){
+      toast('AUTO-DESCENT ENGAGED — converging…',3200);
+      G.player.frozen=true;
+      const from=G.player.pos.clone(); let k=0;
+      const fn=(dt)=>{ k+=dt/4.5; const e=Math.min(1,k), sm=e*e*(3-2*e);
+        const x=from.x+(0-from.x)*sm, z=from.z+(GOALZ-from.z)*sm;
+        const h=(G.groundSampler&&G.groundSampler(x,z))??from.y;
+        G.player.pos.set(x, Math.max(h, from.y+(h-from.y)*sm)+0.1, z);
+        G.player.vel.set(0,0,0);
+        G.player.yaw += (Math.atan2(x-0, z-GOALZ) - G.player.yaw)*0.1;
+        if(e>=1){ G.ticks.splice(G.ticks.indexOf(fn),1); G.player.frozen=false; } };
+      G.ticks.push(fn);
+    }
+    let lastShowT=0;
     function breadcrumbs(){
       const P=G.player.pos;
-      toast('Gold lights mark the way — the beam on the horizon is the goal.',3600);
+      toast('Gold lights mark the way — the beam is the goal.<br><b>Press H again to AUTO-FINISH this section.</b>',4600);
       const crumbs=[];
       for(let k=1;k<=12;k++){
         const t=k/12, x=P.x+(0-P.x)*t, z=P.z+(GOALZ-P.z)*t;
@@ -110,9 +124,14 @@ export default {
       }
       setTimeout(()=>crumbs.forEach(c=>s.remove(c)), 14000);
     }
-    G.showMe=()=>{ if(phase==='A') solveAct1();
+    G.showMe=()=>{
+      if(landed){ const now=performance.now();
+        if(now-lastShowT<25000) flyToGoal();
+        else { lastShowT=now; breadcrumbs(); } return; }
+      if(phase==='A') solveAct1();
       else if(act<2.5) solveAct2();
-      else breadcrumbs(); };
+      else toast('walk to the ledge past the gold door and <b>jump off</b> — then press H out there');
+    };
     const mkShowBtn=(x,z,fn)=>{
       W.button({x,z,y:Y,label:'SHOW ME · or press H',color:W.C.green,fn});
       const c=W.beacon(x,Y+2.6,z,W.C.green,.38);
