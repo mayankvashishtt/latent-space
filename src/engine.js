@@ -50,8 +50,7 @@ export function boot(levels){
     setTimeout(()=>menu.remove(), 850);
     canvas.requestPointerLock();
     loadLevel(0);
-    setTimeout(()=>say('Voice check. If you can hear me, we are ready. Press V any time to mute me.'), 900);
-    setTimeout(()=>{ G.openMap && G.openMap(); }, 2200);
+    setTimeout(()=>{ G.openMap && G.openMap(); }, 1600);
   });
   canvas.addEventListener('click', ()=>{ if(G.started && !panelOpen()) canvas.requestPointerLock(); });
 
@@ -85,6 +84,7 @@ export function loadLevel(i){
     G.composer.addPass(pass1); G.composer.addPass(bloom);
 
     document.getElementById('lvlname').textContent = L.name;
+    startAmbient(i);
     G._levelState = L.build(G) || {};
     fade(0);
     if(L.intro && !(i===0 && sessionStorage.getItem('ls.hubSeen'))){
@@ -100,16 +100,34 @@ function disposeLevel(){
     if(o.material){ (Array.isArray(o.material)?o.material:[o.material]).forEach(m=>m.dispose&&m.dispose()); } }); }
   G._levelState = null;
 }
+export function celebrate(label='CHAMBER COMPLETE'){
+  stinger();
+  const b=document.createElement('div'); b.id='banner'; b.innerHTML=label+' <span>★</span>';
+  document.body.appendChild(b);
+  requestAnimationFrame(()=>b.classList.add('show'));
+  setTimeout(()=>{ b.classList.remove('show'); setTimeout(()=>b.remove(),500); }, 2100);
+  const colors=['#54e0ff','#ff4fd8','#ffd257','#5cff9d','#ffffff'];
+  for(let i=0;i<70;i++){
+    const c=document.createElement('div'); c.className='cf';
+    c.style.left=(Math.random()*100)+'vw';
+    c.style.background=colors[i%colors.length];
+    c.style.animationDuration=(1.5+Math.random()*1.3)+'s';
+    c.style.animationDelay=(Math.random()*0.5)+'s';
+    c.style.width=c.style.height=(5+Math.random()*7)+'px';
+    document.body.appendChild(c);
+    setTimeout(()=>c.remove(), 3600);
+  }
+}
 export function complete(){
   const L = G.levels[G.levelIndex];
   if(G.levelIndex > G.progress){ G.progress = G.levelIndex; localStorage.setItem('ls.progress', String(G.progress)); }
-  chime();
+  celebrate();
   const cx = L.codex || {};
-  panel({
+  setTimeout(()=>panel({
     title:'MECHANISM UNDERSTOOD', sub:L.name,
     html:(cx.html||'') + (cx.lecture?`<p style="margin-top:16px;font-size:13px;color:#7fa8cc">Deep dive → <a href="https://github.com/mayankvashishtt/ai-ml-bootcamp-archive/tree/main/${cx.lecture}" target="_blank">${cx.lecture}</a> in the course archive.</p>`:''),
     buttons:[{label:'See the map ★', primary:true, fn:()=>{ loadLevel(0); setTimeout(()=>G.openMap&&G.openMap(),900); }}]
-  });
+  }), 1900);
 }
 
 // ---------------- physics + step ----------------
@@ -171,7 +189,20 @@ function step(dt){
   if(P.pos.y < -40){ const L=G.levels[G.levelIndex]; toast('signal lost — re-initialized'); buzz();
     if(L.respawn) spawn(...L.respawn); else spawn(0,2,0,0); }
 
-  G.camera.position.set(P.pos.x, P.pos.y+EYE, P.pos.z);
+  // game feel: head bob + footsteps + landing + sprint FOV
+  const hSpeed=Math.hypot(P.vel.x,P.vel.z);
+  if(P.onGround && hSpeed>0.8 && !P.frozen){
+    P._bob=(P._bob||0)+hSpeed*dt*1.75;
+    if(Math.sin(P._bob)<-0.985 && !P._stepped){ P._stepped=true; footstep(); }
+    if(Math.sin(P._bob)>0){ P._stepped=false; }
+  }
+  const bobY = (P.onGround&&hSpeed>0.8) ? Math.sin(P._bob||0)*0.05 : 0;
+  if(P._wasAir && P.onGround && P._fallV<-9){ thud(); }
+  P._wasAir=!P.onGround; if(!P.onGround) P._fallV=P.vel.y;
+  const wantFov=(G.keys['ShiftLeft']||G.keys['ShiftRight'])&&hSpeed>6 ? 82 : 74;
+  if(Math.abs(G.camera.fov-wantFov)>0.1){ G.camera.fov+=(wantFov-G.camera.fov)*Math.min(1,dt*6); G.camera.updateProjectionMatrix(); }
+
+  G.camera.position.set(P.pos.x, P.pos.y+EYE+bobY, P.pos.z);
   G.camera.rotation.order='YXZ';
   G.camera.rotation.y=P.yaw; G.camera.rotation.x=P.pitch;
 
@@ -268,28 +299,47 @@ export function playerNear(x,z,r){ const p=G.player.pos; return (p.x-x)**2+(p.z-
 let gSteps=null, gIdx=0, gHold=0;
 export function guide(steps){ gSteps=steps; gIdx=-1; gHold=0; advanceGuide(); }
 export function guideClear(){ gSteps=null; const el=document.getElementById('guide'); if(el) el.style.opacity='0'; }
+let gFull='', gShown=0, gWho='nova', gSpan=null, gBlipT=0;
 function advanceGuide(){
   gIdx++;
   const el=document.getElementById('guide');
   if(!gSteps || gIdx>=gSteps.length){ guideClear(); return; }
   const st=gSteps[gIdx];
-  const who=st.who||'nova';
-  el.innerHTML='<b class="spk-'+who+'">'+(who==='bit'?'BIT':'NOVA')+'</b>'+st.say;
+  const who=st.who||'nova'; gWho=who;
+  el.innerHTML='<b class="spk-'+who+'">'+(who==='bit'?'BIT':'NOVA')+'</b><span id="gtxt"></span>';
+  gSpan=el.querySelector('#gtxt');
+  gFull=String(st.say); gShown=0; gBlipT=0;
   el.style.opacity='1';
-  say(st.say, who);
+  say(st.say, who);           // optional narrator (off by default)
   st.do && st.do();
 }
+function charBlip(who){
+  if(!AC) return;
+  const o=AC.createOscillator(), g=AC.createGain();
+  if(who==='bit'){ o.type='square'; o.frequency.value=190+Math.random()*45; }
+  else { o.type='sine'; o.frequency.value=560+Math.random()*140; }
+  g.gain.setValueAtTime(0.05,AC.currentTime);
+  g.gain.exponentialRampToValueAtTime(0.001,AC.currentTime+0.045);
+  o.connect(g); g.connect(AC.destination); o.start(); o.stop(AC.currentTime+0.05);
+}
 function tickGuide(dt){
-  if(!gSteps || gIdx<0 || gIdx>=gSteps.length || panelOpen()) return;
+  if(!gSteps || gIdx<0 || gIdx>=gSteps.length) return;
+  // typewriter reveal + speech blips
+  if(gSpan && gShown < gFull.length){
+    gShown=Math.min(gFull.length, gShown+dt*52);
+    gSpan.textContent=gFull.slice(0, Math.floor(gShown));
+    gBlipT+=dt; if(gBlipT>0.055 && !panelOpen()){ gBlipT=0; charBlip(gWho); }
+  }
+  if(panelOpen()) return;
   const st=gSteps[gIdx];
   if(!st.when){ return; }               // terminal line: stays until guideClear/level end
   let ok=false; try{ ok=!!st.when(); }catch(e){}
-  if(ok){ gHold+=dt; if(gHold>0.25){ gHold=0; blip(980,.09,'sine',.14); setTimeout(advanceGuide, 650); gSteps[gIdx]={say:st.say,who:st.who}; } }
+  if(ok){ gHold+=dt; if(gHold>0.25){ gHold=0; blip(980,.09,'sine',.14); setTimeout(advanceGuide, 650); gSteps[gIdx]={say:st.say,who:st.who}; gShown=gFull.length; gSpan&&(gSpan.textContent=gFull); } }
   else gHold=0;
 }
 
 // ---------------- voice narrator (built-in browser speech) ----------------
-let voiceOn = localStorage.getItem('ls.voice')!=='0';
+let voiceOn = localStorage.getItem('ls.voice')==='1';   // narrator OFF by default — blips carry the vibe
 const VOICES={nova:null,bit:null};
 function pickVoices(){
   try{
@@ -334,17 +384,64 @@ export function say(text, who='nova'){
 export function voiceToggle(){
   voiceOn=!voiceOn; localStorage.setItem('ls.voice', voiceOn?'1':'0');
   if(!voiceOn && window.speechSynthesis) speechSynthesis.cancel();
-  toast(voiceOn?'🔊 voice ON':'🔇 voice OFF', 2600, false);
-  if(voiceOn) say('Voice is back on.');
+  toast(voiceOn?'🔊 narrator voice ON':'🔇 narrator voice OFF (text + blips only)', 2600, false);
+  if(voiceOn) say('Narrator on.');
 }
 
 // ---------------- audio (synth, no assets) ----------------
-let AC=null;
+let AC=null, noiseBuf=null, amb=null;
 function audioInit(){ AC = new (window.AudioContext||window.webkitAudioContext)();
-  // ambient pad
-  const o1=AC.createOscillator(), o2=AC.createOscillator(), g=AC.createGain();
-  o1.frequency.value=55; o2.frequency.value=55*1.5; o1.type='sine'; o2.type='sine';
-  g.gain.value=0.018; o1.connect(g); o2.connect(g); g.connect(AC.destination); o1.start(); o2.start();
+  const len=AC.sampleRate*1.2; noiseBuf=AC.createBuffer(1,len,AC.sampleRate);
+  const d=noiseBuf.getChannelData(0); for(let i=0;i<len;i++) d[i]=Math.random()*2-1;
+  startAmbient(0);
+}
+export function footstep(){ if(!AC) return;
+  const src=AC.createBufferSource(); src.buffer=noiseBuf;
+  const f=AC.createBiquadFilter(); f.type='lowpass'; f.frequency.value=340+Math.random()*140;
+  const g=AC.createGain(); g.gain.setValueAtTime(0.11,AC.currentTime);
+  g.gain.exponentialRampToValueAtTime(0.001,AC.currentTime+0.09);
+  src.connect(f); f.connect(g); g.connect(AC.destination); src.start(0, Math.random()*0.5); src.stop(AC.currentTime+0.1);
+}
+export function whoosh(){ if(!AC) return;
+  const src=AC.createBufferSource(); src.buffer=noiseBuf;
+  const f=AC.createBiquadFilter(); f.type='bandpass'; f.Q.value=1.2;
+  f.frequency.setValueAtTime(180,AC.currentTime); f.frequency.exponentialRampToValueAtTime(900,AC.currentTime+0.5);
+  const g=AC.createGain(); g.gain.setValueAtTime(0.0001,AC.currentTime);
+  g.gain.exponentialRampToValueAtTime(0.18,AC.currentTime+0.12);
+  g.gain.exponentialRampToValueAtTime(0.001,AC.currentTime+0.55);
+  src.connect(f); f.connect(g); g.connect(AC.destination); src.start(); src.stop(AC.currentTime+0.6);
+}
+export function stinger(){ if(!AC) return;
+  [0,4,7,12,16].forEach((st2,i)=>{ const t=AC.currentTime+i*0.09;
+    const o=AC.createOscillator(),g=AC.createGain(); o.type='triangle';
+    o.frequency.value=523*Math.pow(2,st2/12);
+    g.gain.setValueAtTime(0.16,t); g.gain.exponentialRampToValueAtTime(0.001,t+0.5);
+    o.connect(g); g.connect(AC.destination); o.start(t); o.stop(t+0.55); });
+}
+const AMB_ROOTS=[110, 98, 87, 104, 92, 82, 116, 90, 78, 98, 110, 104];
+export function startAmbient(idx){ if(!AC) return;
+  stopAmbient();
+  const root=AMB_ROOTS[idx%AMB_ROOTS.length];
+  const master=AC.createGain(); master.gain.value=0.0; master.connect(AC.destination);
+  const lp=AC.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=520; lp.connect(master);
+  const oscs=[0, 7.03, 12.05].map(semi=>{
+    const o=AC.createOscillator(); o.type='sawtooth';
+    o.frequency.value=root*Math.pow(2,semi/12);
+    const og=AC.createGain(); og.gain.value=0.33; o.connect(og); og.connect(lp); o.start(); return o; });
+  master.gain.linearRampToValueAtTime(0.028, AC.currentTime+2.5);
+  const prog=[0,-4,3,-2]; let step=0;
+  const iv=setInterval(()=>{ step=(step+1)%prog.length; const r2=root*Math.pow(2,prog[step]/12);
+    oscs[0].frequency.linearRampToValueAtTime(r2, AC.currentTime+1.6);
+    oscs[1].frequency.linearRampToValueAtTime(r2*Math.pow(2,7.03/12), AC.currentTime+1.6);
+    oscs[2].frequency.linearRampToValueAtTime(r2*Math.pow(2,12.05/12), AC.currentTime+1.6);
+  }, 7000);
+  amb={master,oscs,iv};
+}
+function stopAmbient(){ if(!amb||!AC) return;
+  clearInterval(amb.iv);
+  const m=amb.master; m.gain.linearRampToValueAtTime(0.0001, AC.currentTime+0.8);
+  const oldOscs=amb.oscs; setTimeout(()=>{ oldOscs.forEach(o=>{try{o.stop()}catch(e){}}); m.disconnect(); },1000);
+  amb=null;
 }
 export function blip(f=880,d=0.08,type='sine',v=0.2){ if(!AC) return;
   const o=AC.createOscillator(),g=AC.createGain(); o.type=type; o.frequency.value=f;

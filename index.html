@@ -57,7 +57,9 @@
   /* ---------- Menu ---------- */
   #menu{position:fixed;inset:0;z-index:30;display:flex;flex-direction:column;align-items:center;justify-content:center;
       background:radial-gradient(ellipse at 50% 40%,#0a1428 0%,#04060e 70%);cursor:pointer}
-  #menu h1{font-size:min(9vw,84px);letter-spacing:.42em;font-weight:200;color:#fff;text-indent:.42em;
+  #menu::before{content:'';position:absolute;inset:0;background-image:radial-gradient(1.5px 1.5px at 20% 30%,#7fd8ff88,transparent),radial-gradient(1px 1px at 70% 20%,#ff4fd866,transparent),radial-gradient(1.5px 1.5px at 40% 70%,#ffffff55,transparent),radial-gradient(1px 1px at 85% 60%,#7fd8ff66,transparent),radial-gradient(1.5px 1.5px at 10% 80%,#ffd25755,transparent),radial-gradient(1px 1px at 55% 45%,#ffffff44,transparent);background-size:600px 600px;animation:starDrift 60s linear infinite}
+  @keyframes starDrift{to{background-position:600px 600px}}
+  #menu h1{position:relative;font-size:min(9vw,84px);letter-spacing:.42em;font-weight:200;color:#fff;text-indent:.42em;
       text-shadow:0 0 40px #54e0ffaa,0 0 90px #ff4fd844;animation:pulse 3.4s ease-in-out infinite}
   @keyframes pulse{0%,100%{opacity:.92}50%{opacity:1;text-shadow:0 0 60px #54e0ffdd,0 0 120px #ff4fd866}}
   #menu h2{margin-top:14px;font-size:13px;letter-spacing:.5em;color:#7fb6de;text-transform:uppercase;text-indent:.5em}
@@ -66,6 +68,20 @@
   #menu .ctl{margin-top:46px;font-size:12px;letter-spacing:.15em;color:#5f86ab;line-height:2.1;text-align:center}
   #menu .ctl b{color:#a8d4f5;background:#0d1830;padding:1px 8px;border-radius:3px;border:1px solid var(--edge)}
   #fade{position:fixed;inset:0;background:#000;z-index:15;pointer-events:none;opacity:0;transition:opacity .6s}
+  #vig{position:fixed;inset:0;z-index:4;pointer-events:none;
+      background:radial-gradient(ellipse at center,transparent 55%,rgba(2,4,12,.55) 100%)}
+  /* ---------- completion banner + confetti ---------- */
+  #banner{position:fixed;left:50%;top:38%;transform:translate(-50%,-50%) scale(.6);z-index:22;
+      font-size:min(6vw,52px);letter-spacing:.32em;color:#fff;font-weight:200;white-space:nowrap;
+      text-shadow:0 0 30px #54e0ffcc,0 0 80px #ff4fd866;opacity:0;transition:all .45s cubic-bezier(.2,1.6,.4,1);pointer-events:none}
+  #banner span{color:var(--gd);text-shadow:0 0 30px #ffd257}
+  #banner.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
+  .cf{position:fixed;top:-4vh;z-index:21;border-radius:2px;pointer-events:none;
+      animation:cfFall linear forwards}
+  @keyframes cfFall{to{transform:translateY(112vh) rotate(660deg)}}
+  /* ---------- star pop on map ---------- */
+  @keyframes starPop{0%{transform:scale(.2)}55%{transform:scale(1.8);text-shadow:0 0 40px #ffd257}100%{transform:scale(1)}}
+  .starOn.pop{display:inline-block;animation:starPop .9s cubic-bezier(.2,1.6,.4,1)}
   /* ---------- speaker names in guide bar ---------- */
   #guide b{margin-right:10px;letter-spacing:.18em;font-size:12px;padding:2px 8px;border-radius:3px}
   #guide b.spk-nova{color:#04121c;background:var(--cy)}
@@ -136,11 +152,12 @@
   <div class="start">— click to wake the model —</div>
   <div class="ctl">
     <b>W A S D</b> move &nbsp;·&nbsp; <b>MOUSE</b> look &nbsp;·&nbsp; <b>SPACE</b> jump &nbsp;·&nbsp;
-    <b>E</b> interact &nbsp;·&nbsp; <b>SHIFT</b> run &nbsp;·&nbsp; <b>V</b> voice &nbsp;·&nbsp; <b>M</b> map<br>
-    desktop + keyboard required · progress saves automatically · a voice will guide you 🔊
+    <b>E</b> interact &nbsp;·&nbsp; <b>SHIFT</b> run &nbsp;·&nbsp; <b>M</b> map &nbsp;·&nbsp; <b>V</b> narrator voice (off by default)<br>
+    desktop + keyboard · progress saves automatically · 🎧 sound on — the game talks in blips
   </div>
 </div>
 
+<div id="vig"></div>
 <div id="fade"></div>
 <script type="module" src="./src/main.js"></script>
 </body>

@@ -1,6 +1,6 @@
 // LATENT SPACE — shared world-building toolkit.
 import * as THREE from 'three';
-import { G, addCollider, interact, panel, tween, blip } from './engine.js';
+import { G, addCollider, interact, panel, tween, blip, whoosh } from './engine.js';
 
 export const C = { cyan:0x54e0ff, magenta:0xff4fd8, gold:0xffd257, green:0x5cff9d, red:0xff5c6a,
                    deep:0x0a1020, steel:0x18243a, dark:0x0d1526 };
@@ -95,7 +95,7 @@ export function door({x,z,y=0,w=3.4,h=3.6,axis='x',color=C.magenta}={}){
   m.position.set(x,y+h/2,z); G.scene.add(m);
   const col=addCollider(m);
   const st={mesh:m, isOpen:false,
-    open(){ if(st.isOpen) return; st.isOpen=true; blip(220,.3,'sine',.2);
+    open(){ if(st.isOpen) return; st.isOpen=true; whoosh();
       tween(m.position,'y', y-h+0.1, 1.1, ()=>{}); setTimeout(()=>col.remove(), 400); },
     close(){ st.isOpen=false; tween(m.position,'y', y+h/2, 0.8); G.colliders.includes(col)||G.colliders.push(col); col.refresh&&setTimeout(()=>col.refresh(),900); }};
   return st;
@@ -115,6 +115,13 @@ export function portalGate({x,z,name,sub='',locked=false,done=false,fn}={}){
   st.position.set(x,0.55,z); G.scene.add(st);
   const hit=box(3.4,4.5,1.2,new THREE.MeshBasicMaterial({visible:false})); hit.position.set(x,2.2,z); G.scene.add(hit);
   if(!locked && fn) interact(hit, done?'re-enter '+name:'enter '+name, fn);
+  if(!locked && !done){
+    // beacon beam: "you are going HERE next"
+    const beam=new THREE.Mesh(new THREE.CylinderGeometry(.28,.55,26,10,1,true),
+      new THREE.MeshBasicMaterial({color, transparent:true, opacity:.14, side:THREE.DoubleSide, depthWrite:false}));
+    beam.position.set(x,13,z); G.scene.add(beam);
+    beam.userData.spin=0.5; G.animated.push(beam);
+  }
   return ring;
 }
 

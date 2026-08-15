@@ -1,5 +1,5 @@
 // THE JOURNEY MAP — the whole course on one screen: 4 worlds, stars, and what each chamber teaches.
-import { G, loadLevel, say } from './engine.js';
+import { G, loadLevel, stinger } from './engine.js';
 import { WORLDS, FINAL, ACADEMY } from './worlds.js';
 
 function starEarned(w){ return w.chambers.every(c=>G.progress>=c.i); }
@@ -63,6 +63,16 @@ export function openMap(){
   el.innerHTML=h; el.style.display='flex';
   G.player.frozen=true; document.exitPointerLock();
   try{ window.speechSynthesis && speechSynthesis.cancel(); }catch(e){}
+
+  // star pop animation when a new star was just earned
+  const prev=parseInt(localStorage.getItem('ls.stars')||'0',10);
+  if(stars>prev){
+    const starEls=el.querySelectorAll('.starRow .starOn');
+    const newest=starEls[starEls.length-1];
+    if(newest){ newest.classList.add('pop'); }
+    try{ stinger(); }catch(e){}
+  }
+  localStorage.setItem('ls.stars', String(stars));
 
   el.querySelectorAll('.ch').forEach(row=>{
     const lvl=row.dataset.lvl;
