@@ -5,10 +5,10 @@ import * as W from '../world.js';
 import { TEXT } from '../text.js';
 
 export default {
-  id:10, name:'X · OUTPUT HEAD', tagline:'the final forward pass',
+  id:9, name:'IX · OUTPUT HEAD', tagline:'the final forward pass',
   respawn:[0,1,10,0],
-  intro:TEXT[10].intro,
-  codex:TEXT[10].codex,
+  intro:TEXT[9].intro,
+  codex:TEXT[9].codex,
   build(){
     const s=G.scene;
     s.fog=new THREE.Fog(0x04060e,16,60);

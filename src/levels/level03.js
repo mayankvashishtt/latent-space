@@ -5,10 +5,10 @@ import * as W from '../world.js';
 import { TEXT } from '../text.js';
 
 export default {
-  id:3, name:'III · THE TOKENIZER', tagline:'what the model sees',
+  id:2, name:'II · THE TOKENIZER', tagline:'what the model sees',
   respawn:[0,1,14,0],
-  intro:TEXT[3].intro,
-  codex:TEXT[3].codex,
+  intro:TEXT[2].intro,
+  codex:TEXT[2].codex,
   build(){
     const s=G.scene;
     s.fog=new THREE.Fog(0x04060e,18,60);

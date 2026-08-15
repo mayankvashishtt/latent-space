@@ -5,10 +5,10 @@ import * as W from '../world.js';
 import { TEXT } from '../text.js';
 
 export default {
-  id:4, name:'IV · EMBEDDING SPACE', tagline:'meaning is a place',
+  id:3, name:'III · EMBEDDING SPACE', tagline:'meaning is a place',
   respawn:[0,1,30,0],
-  intro:TEXT[4].intro,
-  codex:TEXT[4].codex,
+  intro:TEXT[3].intro,
+  codex:TEXT[3].codex,
   build(){
     const s=G.scene;
     s.background=new THREE.Color(0x02030a);

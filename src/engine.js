@@ -23,6 +23,8 @@ export function boot(levels){
   G.renderer = new THREE.WebGLRenderer({canvas, antialias:true});
   G.renderer.setPixelRatio(Math.min(devicePixelRatio,2));
   G.renderer.setSize(innerWidth,innerHeight);
+  G.renderer.toneMapping=THREE.ACESFilmicToneMapping;
+  G.renderer.toneMappingExposure=1.25;
   G.camera = new THREE.PerspectiveCamera(74, innerWidth/innerHeight, 0.08, 600);
 
   addEventListener('resize', ()=>{
@@ -77,6 +79,28 @@ export function loadLevel(i){
     G.ticks.length=0; G.tweens.length=0;
     document.getElementById('bars').innerHTML='';
     dropHeld();
+
+    // sky: gradient dome + stars (auto, per-level palette)
+    const SKY=[[0x0b1c3a,0x05070f],[0x101a30,0x060810],[0x0a1030,0x030510],[0x1a1030,0x080410],
+               [0x0a2033,0x040a10],[0x241028,0x0a0410],[0x0a1a26,0x040810],[0x261a0a,0x100804],
+               [0x2a0d18,0x0d0408],[0x1a1a2e,0x08080f],[0x102040,0x040810],[0x201a10,0x0c0a06]];
+    const pal=SKY[i%SKY.length];
+    const domeGeo=new THREE.SphereGeometry(360,24,16);
+    const domeMat=new THREE.ShaderMaterial({side:THREE.BackSide, depthWrite:false, fog:false,
+      uniforms:{top:{value:new THREE.Color(pal[0])}, bot:{value:new THREE.Color(pal[1])}},
+      vertexShader:'varying vec3 vP; void main(){ vP=position; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0); }',
+      fragmentShader:'varying vec3 vP; uniform vec3 top; uniform vec3 bot; void main(){ float h=clamp(vP.y/360.0*0.5+0.5,0.0,1.0); gl_FragColor=vec4(mix(bot,top,pow(h,1.4)),1.0); }'});
+    const dome=new THREE.Mesh(domeGeo,domeMat); G.scene.add(dome);
+    G.ticks.push(()=>dome.position.copy(G.camera.position));
+    const stGeo=new THREE.BufferGeometry(); const stArr=new Float32Array(900*3);
+    for(let k=0;k<900;k++){ const a=Math.random()*Math.PI*2, b=Math.acos(Math.random()*0.9);
+      stArr[k*3]=Math.sin(b)*Math.cos(a)*340; stArr[k*3+1]=Math.cos(b)*340; stArr[k*3+2]=Math.sin(b)*Math.sin(a)*340; }
+    stGeo.setAttribute('position',new THREE.BufferAttribute(stArr,3));
+    const stars=new THREE.Points(stGeo,new THREE.PointsMaterial({color:0xaaccee,size:1.1,sizeAttenuation:false,transparent:true,opacity:.65,fog:false}));
+    G.scene.add(stars); G.ticks.push(()=>stars.position.copy(G.camera.position));
+    // player glow light
+    G.scene.add(G.camera);
+    const camL=new THREE.PointLight(0x86b6ff,.8,22); camL.position.set(0,.3,.2); G.camera.add(camL);
 
     const pass1 = new RenderPass(G.scene, G.camera);
     const bloom = new UnrealBloomPass(new THREE.Vector2(innerWidth,innerHeight), 0.75, 0.5, 0.72);
@@ -246,7 +270,7 @@ function tryInteract(){ if(aimed && !panelOpen() && !G.player.frozen){ blip(720,
 // ---------------- HUD ----------------
 export function obj(text){ document.getElementById('obj').innerHTML = text; }
 let toastT=null;
-export function toast(text, ms=2600, speak=true){
+export function toast(text, ms=2600, speak=false){
   const t=document.getElementById('toast'); t.innerHTML=text; t.style.opacity='1';
   clearTimeout(toastT); toastT=setTimeout(()=>t.style.opacity='0', ms);
   if(speak) say(text,'bit');
@@ -305,12 +329,13 @@ function advanceGuide(){
   const el=document.getElementById('guide');
   if(!gSteps || gIdx>=gSteps.length){ guideClear(); return; }
   const st=gSteps[gIdx];
+  if(st.task) obj(st.task);
   const who=st.who||'nova'; gWho=who;
   el.innerHTML='<b class="spk-'+who+'">'+(who==='bit'?'BIT':'NOVA')+'</b><span id="gtxt"></span>';
   gSpan=el.querySelector('#gtxt');
   gFull=String(st.say); gShown=0; gBlipT=0;
   el.style.opacity='1';
-  say(st.say, who);           // optional narrator (off by default)
+  if(!G.mapOpen) say(st.say, who);   // optional narrator; never under the map
   st.do && st.do();
 }
 function charBlip(who){
@@ -323,7 +348,7 @@ function charBlip(who){
   o.connect(g); g.connect(AC.destination); o.start(); o.stop(AC.currentTime+0.05);
 }
 function tickGuide(dt){
-  if(!gSteps || gIdx<0 || gIdx>=gSteps.length) return;
+  if(!gSteps || gIdx<0 || gIdx>=gSteps.length || G.mapOpen) return;
   // typewriter reveal + speech blips
   if(gSpan && gShown < gFull.length){
     gShown=Math.min(gFull.length, gShown+dt*52);
@@ -339,6 +364,7 @@ function tickGuide(dt){
 }
 
 // ---------------- voice narrator (built-in browser speech) ----------------
+if(localStorage.getItem('ls.vmig')!=='2'){ localStorage.setItem('ls.voice','0'); localStorage.setItem('ls.vmig','2'); }
 let voiceOn = localStorage.getItem('ls.voice')==='1';   // narrator OFF by default — blips carry the vibe
 const VOICES={nova:null,bit:null};
 function pickVoices(){
@@ -361,7 +387,7 @@ setInterval(()=>{ try{ if(window.speechSynthesis&&speechSynthesis.speaking&&!spe
 
 export function say(text, who='nova'){
   try{
-    if(!voiceOn || !window.speechSynthesis) return;
+    if(!voiceOn || !window.speechSynthesis || G.mapOpen) return;
     const plain=String(text).replace(/<[^>]*>/g,' ').replace(/&[a-z]+;/gi,' ').replace(/[·—]/g,', ').replace(/\s+/g,' ').trim();
     if(!plain) return;
     speechSynthesis.cancel();

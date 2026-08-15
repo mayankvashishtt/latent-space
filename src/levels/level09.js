@@ -6,10 +6,10 @@ import * as W from '../world.js';
 import { TEXT } from '../text.js';
 
 export default {
-  id:9, name:'IX · THE GAUNTLET', tagline:'the sign is lying and the drone can read',
+  id:8, name:'VIII · THE GAUNTLET', tagline:'the sign is lying and the drone can read',
   respawn:[0,1,14,0],
-  intro:TEXT[9].intro,
-  codex:TEXT[9].codex,
+  intro:TEXT[8].intro,
+  codex:TEXT[8].codex,
   build(){
     const s=G.scene;
     s.fog=new THREE.Fog(0x060408,16,60);

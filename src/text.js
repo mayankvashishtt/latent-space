@@ -5,51 +5,36 @@ export const TEXT = {
 
 0:{ intro:`
   <p><b>Welcome. You are inside an AI brain.</b></p>
-  <p>Ten rooms, one big idea each — and you will <em>do</em> every idea with your own hands.</p>
+  <p>Nine chambers, one big idea each — and you will <em>do</em> every idea with your own hands.</p>
   <p class="quote">🔊 A voice will guide you, step by step. Do what it says, and watch what happens.
   Press <code>V</code> anytime to mute it.</p>`
 },
-
 1:{ intro:`
-  <p><b>THE BIG IDEA: one AI brain cell can only draw ONE straight cut.</b></p>
-  <p>Find out what that means — and where it breaks.</p>
-  <p class="quote">🔊 Close this and follow the voice.</p>`,
+  <p><b>THE BIG IDEA: a brain cell makes ONE straight cut — and training is how billions of cuts
+  find their place.</b></p>
+  <p>Three acts: make the cut · meet the cut that can't exist · then step off the edge and
+  <em>become</em> the training algorithm.</p>
+  <p class="quote">Follow NOVA and BIT. The TASK card (top-left) always says what to do next.</p>`,
   codex:{
-    html:`<p><b>What you just learned, in plain words:</b></p>
-    <p>That wall of light was a <b>neuron</b> — one cell of a neural network. A neuron can only make
-    <b>one straight cut</b> through information: this side yes, that side no. Nothing more.</p>
-    <p>Room two was the famous <b>XOR problem</b>: the gold balls sat on opposite corners, so no single
-    straight cut could ever separate them. In 1969, scientists proved this — and people got so
-    discouraged they almost gave up on AI completely.</p>
-    <p>The fix was the <b>second wall</b>. Two cuts, combined, can make shapes one cut never could.
-    In a real AI, that "second wall" is called a <b>hidden layer</b>.</p>
-    <p class="quote">So when people say an AI has "deep" layers — THIS is why. Depth = the power to
-    combine many simple cuts into one smart shape. ChatGPT has about a hundred layers of these cuts.</p>`,
+    html:`<p><b>What you just did, in plain words:</b></p>
+    <p><b>Act 1:</b> that wall was a <b>neuron</b> — one cell of an AI. One straight cut: this side
+    yes, that side no. That's its entire power.</p>
+    <p><b>Act 2:</b> the XOR pattern — gold on opposite corners — is IMPOSSIBLE for one cut.
+    Proven in 1969, and the proof nearly killed AI research. The fix: a second cut, plus a rule for
+    combining them. In a real AI that's a <b>hidden layer</b>, and depth means exactly this — the
+    power to compose simple cuts into shapes no single cut can make.</p>
+    <p><b>Act 3:</b> you set your cuts by hand. Real AI has billions — nobody places them by hand.
+    Instead: the fog valley. Height = error, the arrow = the <b>gradient</b>, and walking downhill =
+    <b>gradient descent</b>, the algorithm that trains every AI on earth. Your step modes were the
+    <b>learning rate</b> (too big slides past, too small dies of old age), the red crystals were
+    <b>local minimums</b>, and the pink pads were <b>momentum</b>.</p>
+    <p class="quote">One journey, one truth: intelligence = many simple cuts, positioned by walking
+    downhill on a mountain of mistakes.</p>`,
     lecture:'notes/week-02-neural-networks-from-scratch'
   }
 },
 
 2:{ intro:`
-  <p><b>THE BIG IDEA: AI learns by feeling its way downhill in the dark.</b></p>
-  <p>Now it's your turn to feel it. Keys <b>1 / 2 / 3</b> change your speed.</p>
-  <p class="quote">🔊 Close this and follow the voice.</p>`,
-  codex:{
-    html:`<p><b>What you just learned, in plain words:</b></p>
-    <p>You just did <b>gradient descent</b> — the exact method that trains every AI in the world.
-    The AI can't see the whole map either. It only feels the slope right under its feet (that's the
-    "gradient") and takes a small step downhill. Millions of times.</p>
-    <p>Your speed buttons were the <b>learning rate</b>. Too careful = you run out of energy before
-    arriving (training too slow). Too fast = you slide past the valley and up the other side
-    (training explodes). Real AI training fails in exactly these two ways.</p>
-    <p>The fake valleys were <b>local minimums</b> — spots that feel like the bottom but aren't.
-    The jump-pad that threw you out is called <b>momentum</b>, and real training uses it too.</p>
-    <p class="quote">Next time you hear "the model is training" — picture yourself in that fog,
-    feeling for downhill, one step at a time. That's literally all it is.</p>`,
-    lecture:'notes/week-02-neural-networks-from-scratch'
-  }
-},
-
-3:{ intro:`
   <p><b>THE BIG IDEA: AI can't read letters — only chunks called tokens.</b></p>
   <p>Build the chunk machine yourself. Then face the strawberry question.</p>
   <p class="quote">🔊 Close this and follow the voice.</p>`,
@@ -67,8 +52,7 @@ export const TEXT = {
     lecture:'notes/week-03-transformers-part-1'
   }
 },
-
-4:{ intro:`
+3:{ intro:`
   <p><b>THE BIG IDEA: to an AI, every word is a LOCATION on a map of meaning.</b></p>
   <p>File the lost words. Then do math on ideas: KING − MAN + WOMAN = ?</p>
   <p class="quote">🔊 Close this and follow the voice.</p>`,
@@ -87,8 +71,7 @@ export const TEXT = {
     lecture:'notes/week-03-transformers-part-1'
   }
 },
-
-5:{ intro:`
+4:{ intro:`
   <p><b>THE BIG IDEA: "attention" is a budget that always adds up to exactly 1.</b></p>
   <p>Spend it right, and words find their meaning.</p>
   <p class="quote">🔊 Close this and follow the voice.</p>`,
@@ -108,8 +91,7 @@ export const TEXT = {
     lecture:'notes/week-04-transformers-part-2'
   }
 },
-
-6:{ intro:`
+5:{ intro:`
   <p><b>THE BIG IDEA: AI searches by MEANING — which fails hard on exact things like dates.</b></p>
   <p>Watch it fail. Fix it. Then survive the junk-context corridor.</p>
   <p class="quote">🔊 Close this and follow the voice.</p>`,
@@ -128,8 +110,7 @@ export const TEXT = {
     lecture:'notes/week-09-rag-part-1'
   }
 },
-
-7:{ intro:`
+6:{ intro:`
   <p><b>THE BIG IDEA: an AI agent is a brain in a loop — think, act, observe, repeat.</b></p>
   <p>You write its instructions. It does the work. Your words decide if it succeeds.</p>
   <p class="quote">🔊 Close this and follow the voice.</p>`,
@@ -148,8 +129,7 @@ export const TEXT = {
     lecture:'notes/week-08-from-apis-to-agents'
   }
 },
-
-8:{ intro:`
+7:{ intro:`
   <p><b>THE BIG IDEA: AI does what you REWARD, not what you WANT.</b></p>
   <p>Pick the creature's reward. Watch what you actually asked for.</p>
   <p class="quote">🔊 Close this and follow the voice.</p>`,
@@ -168,8 +148,7 @@ export const TEXT = {
     lecture:'notes/week-14-fine-tuning-part-3'
   }
 },
-
-9:{ intro:`
+8:{ intro:`
   <p><b>THE BIG IDEA: anyone who can write text your AI reads can try to hijack it.</b></p>
   <p>Watch your robot get owned by a wall. Then defend it — the right way.</p>
   <p class="quote">🔊 Close this and follow the voice.</p>`,
@@ -188,8 +167,7 @@ export const TEXT = {
     lecture:'supplementary/s04-safety-jailbreaks-guardrails'
   }
 },
-
-10:{ intro:`
+9:{ intro:`
   <p><b>THE FINAL TEST.</b> Five rooms. Everything you've learned. No hints.</p>
   <p class="quote">🔊 The voice goes silent after one last word. Good luck.</p>`,
   codex:{

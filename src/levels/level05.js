@@ -6,10 +6,10 @@ import * as W from '../world.js';
 import { TEXT } from '../text.js';
 
 export default {
-  id:5, name:'V · ATTENTION', tagline:'a budget that always sums to one',
+  id:4, name:'IV · ATTENTION', tagline:'a budget that always sums to one',
   respawn:[0,1,16,0],
-  intro:TEXT[5].intro,
-  codex:TEXT[5].codex,
+  intro:TEXT[4].intro,
+  codex:TEXT[4].codex,
   build(){
     const s=G.scene;
     s.fog=new THREE.Fog(0x04060e,20,70);

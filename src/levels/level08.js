@@ -5,10 +5,10 @@ import * as W from '../world.js';
 import { TEXT } from '../text.js';
 
 export default {
-  id:8, name:'VIII · REWARD PEAKS', tagline:'you get what you measure',
+  id:7, name:'VII · REWARD PEAKS', tagline:'you get what you measure',
   respawn:[0,1,14,0],
-  intro:TEXT[8].intro,
-  codex:TEXT[8].codex,
+  intro:TEXT[7].intro,
+  codex:TEXT[7].codex,
   build(){
     const s=G.scene;
     s.fog=new THREE.Fog(0x06040c,18,65);

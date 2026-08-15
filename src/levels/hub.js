@@ -28,16 +28,15 @@ export default {
     const st=W.stream({count:700, area:[13,6,126], dir:[0,0,-1], speed:9, cy:3.4});
 
     const LV = [
-      {i:1,  name:'I · THE NEURON',      sub:'linear separability',    z: 42, side:-1},
-      {i:2,  name:'II · DESCENT',        sub:'the loss landscape',     z: 42, side: 1},
-      {i:3,  name:'III · THE TOKENIZER', sub:'what the model sees',    z: 26, side:-1},
-      {i:4,  name:'IV · EMBEDDING SPACE',sub:'meaning as geometry',    z: 26, side: 1},
-      {i:5,  name:'V · ATTENTION',       sub:'the engine of context',  z: 10, side:-1},
-      {i:6,  name:'VI · THE ARCHIVE',    sub:'retrieval & context rot',z: 10, side: 1},
-      {i:7,  name:'VII · AGENT FOUNDRY', sub:'tools · loop · harness', z: -6, side:-1},
-      {i:8,  name:'VIII · REWARD PEAKS', sub:'RL & Goodhart',          z: -6, side: 1},
-      {i:9,  name:'IX · THE GAUNTLET',   sub:'injection & safety',     z:-22, side:-1},
-      {i:10, name:'X · OUTPUT HEAD',     sub:'the final forward pass', z:-46, side: 0},
+      {i:1, name:'I · THE LEARNING MACHINE', sub:'cut · compose · descend', z: 40, side: 0},
+      {i:2, name:'II · THE TOKENIZER',       sub:'what the model sees',     z: 24, side:-1},
+      {i:3, name:'III · EMBEDDING SPACE',    sub:'meaning as geometry',     z: 24, side: 1},
+      {i:4, name:'IV · ATTENTION',           sub:'the engine of context',   z:  8, side:-1},
+      {i:5, name:'V · THE ARCHIVE',          sub:'retrieval & context rot', z:  8, side: 1},
+      {i:6, name:'VI · AGENT FOUNDRY',       sub:'tools · loop · harness',  z: -8, side:-1},
+      {i:7, name:'VII · REWARD PEAKS',       sub:'RL & Goodhart',           z: -8, side: 1},
+      {i:8, name:'VIII · THE GAUNTLET',      sub:'injection & safety',      z:-24, side:-1},
+      {i:9, name:'IX · OUTPUT HEAD',         sub:'the final forward pass',  z:-46, side: 0},
     ];
     for(const L of LV){
       const locked = G.progress < L.i-1;
@@ -48,28 +47,27 @@ export default {
 
     // THE ACADEMY — library of all 38 lessons, always open, behind spawn
     W.portalGate({x:0, z:60, name:'THE ACADEMY', sub:'all 38 lessons in plain words · always open',
-      locked:false, done:false, fn:()=>loadLevel(11)});
+      locked:false, done:false, fn:()=>loadLevel(10)});
 
     // codex terminal near spawn
     W.terminal({x:-5.5,z:50, yaw:0.9, label:'THE CODEX', title:'THE CODEX', sub:'what each chamber teaches',
       html:`
       <p style="font-size:14px;line-height:2">
-      <b>I Neuron</b> → weights, bias, linear collapse, XOR &nbsp;<code>week-02</code><br>
-      <b>II Descent</b> → gradients, learning rate, local minima &nbsp;<code>week-02</code><br>
-      <b>III Tokenizer</b> → BPE, the strawberry problem &nbsp;<code>week-03</code><br>
-      <b>IV Embedding Space</b> → meaning as geometry, vector math &nbsp;<code>week-03 · s06</code><br>
-      <b>V Attention</b> → Q/K/V, the budget, causal mask, KV cache &nbsp;<code>week-04</code><br>
-      <b>VI Archive</b> → RAG, hybrid search, context rot &nbsp;<code>week-09 · week-10</code><br>
-      <b>VII Agent Foundry</b> → tools, loop, harness quality &nbsp;<code>week-08 · week-17</code><br>
-      <b>VIII Reward Peaks</b> → reward hacking, verifiable rewards &nbsp;<code>week-14 · week-15</code><br>
-      <b>IX Gauntlet</b> → prompt injection, least privilege &nbsp;<code>s04</code><br>
-      <b>X Output Head</b> → softmax, temperature, everything at once &nbsp;<code>s07</code></p>
+      <b>I Learning Machine</b> → neurons, XOR, hidden layers, gradient descent &nbsp;<code>week-02</code><br>
+      <b>II Tokenizer</b> → BPE, the strawberry problem &nbsp;<code>week-03</code><br>
+      <b>III Embedding Space</b> → meaning as geometry, vector math &nbsp;<code>week-03 · s06</code><br>
+      <b>IV Attention</b> → Q/K/V, the budget, causal mask, KV cache &nbsp;<code>week-04</code><br>
+      <b>V Archive</b> → RAG, hybrid search, context rot &nbsp;<code>week-09 · week-10</code><br>
+      <b>VI Agent Foundry</b> → tools, loop, harness quality &nbsp;<code>week-08 · week-17</code><br>
+      <b>VII Reward Peaks</b> → reward hacking, verifiable rewards, GRPO &nbsp;<code>week-14 · week-15</code><br>
+      <b>VIII Gauntlet</b> → prompt injection, least privilege &nbsp;<code>s04</code><br>
+      <b>IX Output Head</b> → softmax, temperature, everything at once &nbsp;<code>s07</code></p>
       <p style="font-size:13px;color:#7fa8cc;margin-top:14px">Full 38-lecture archive:
       <a href="https://github.com/mayankvashishtt/ai-ml-bootcamp-archive" target="_blank">ai-ml-bootcamp-archive</a>.
       Topics not yet built as chambers (scale &amp; MoE, inference cost, multimodal vision, world models…) are
       designed as future <em>Expansion Chambers</em> — see the README.</p>`});
 
-    obj(`MAIN HALL — <b>${G.progress}/10</b> rooms finished · walk to a glowing ring, press E${G.progress>=10?' · <b style="color:#ffd257">ALL DONE!</b>':''}`);
+    obj(`MAIN HALL — <b>${G.progress}/9</b> chambers finished · walk to a glowing ring, press E${G.progress>=9?' · <b style="color:#ffd257">ALL DONE!</b>':''}`);
 
     // golden state on completion
     if(G.progress>=10){ s.fog=new THREE.Fog(0x0e0a04,20,95);

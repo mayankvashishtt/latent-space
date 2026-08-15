@@ -19,8 +19,10 @@
   #xh.on{transform:translate(-50%,-50%) scale(2.2);background:var(--cy)}
   #prompt{position:absolute;left:50%;top:57%;transform:translateX(-50%);font-size:15px;letter-spacing:.12em;
       color:var(--cy);text-shadow:0 0 12px #54e0ff66;opacity:0;transition:opacity .15s;text-transform:uppercase}
-  #obj{position:absolute;left:26px;top:22px;max-width:420px;font-size:13px;letter-spacing:.14em;text-transform:uppercase;
-      color:#9fd8ff;border-left:2px solid var(--cy);padding:6px 0 6px 12px;text-shadow:0 0 10px #000}
+  #obj{position:absolute;left:22px;top:20px;max-width:min(460px,42vw);font-size:14px;line-height:1.6;letter-spacing:.06em;
+      color:#cfe8ff;background:#0a1424e6;border:1px solid #234a6e;border-left:3px solid var(--cy);
+      padding:10px 16px;border-radius:6px;box-shadow:0 0 24px #54e0ff1a}
+  #obj::before{content:'TASK';display:block;font-size:9.5px;letter-spacing:.3em;color:var(--cy);margin-bottom:4px}
   #obj b{color:#fff}
   #lvlname{position:absolute;right:26px;top:22px;text-align:right;font-size:12px;letter-spacing:.3em;color:#6f9fc8;text-transform:uppercase}
   #toast{position:absolute;left:50%;bottom:110px;transform:translateX(-50%);font-size:15px;letter-spacing:.1em;

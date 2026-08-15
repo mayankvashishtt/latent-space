@@ -5,7 +5,7 @@ import * as W from '../world.js';
 import { WINGS } from '../academy_data.js';
 
 export default {
-  id:11, name:'THE ACADEMY',
+  id:10, name:'THE ACADEMY',
   tagline:'every lesson of the course, in plain words',
   respawn:[0,1,40,0],
   intro:`

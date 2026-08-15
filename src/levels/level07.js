@@ -6,10 +6,10 @@ import * as W from '../world.js';
 import { TEXT } from '../text.js';
 
 export default {
-  id:7, name:'VII · AGENT FOUNDRY', tagline:'the loop is the intelligence',
+  id:6, name:'VI · AGENT FOUNDRY', tagline:'the loop is the intelligence',
   respawn:[0,1,14,0],
-  intro:TEXT[7].intro,
-  codex:TEXT[7].codex,
+  intro:TEXT[6].intro,
+  codex:TEXT[6].codex,
   build(){
     const s=G.scene;
     s.fog=new THREE.Fog(0x04060e,18,60);

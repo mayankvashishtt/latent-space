@@ -6,10 +6,10 @@ import * as W from '../world.js';
 import { TEXT } from '../text.js';
 
 export default {
-  id:6, name:'VI · THE ARCHIVE', tagline:'similarity is not relevance',
+  id:5, name:'V · THE ARCHIVE', tagline:'similarity is not relevance',
   respawn:[0,1,20,0],
-  intro:TEXT[6].intro,
-  codex:TEXT[6].codex,
+  intro:TEXT[5].intro,
+  codex:TEXT[5].codex,
   build(){
     const s=G.scene;
     s.fog=new THREE.Fog(0x040308,16,55);

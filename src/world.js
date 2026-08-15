@@ -19,20 +19,43 @@ export function ground(w,d,{y=0,color=C.dark,cx=0,cz=0,grid=true}={}){
   const g = box(w,0.5,d, mat(color,{rough:.85}));
   g.position.set(cx,y-0.25,cz); G.scene.add(g); addCollider(g);
   if(grid){
-    const gh = new THREE.GridHelper(Math.max(w,d), Math.round(Math.max(w,d)/2), 0x1d3a5c, 0x122238);
+    const gh = new THREE.GridHelper(Math.max(w,d), Math.round(Math.max(w,d)/2), 0x2a5580, 0x18304c);
     gh.position.set(cx,y+0.02,cz); G.scene.add(gh);
   }
   return g;
 }
 
-export function room({w=20,h=6,d=20,cx=0,cz=0,y=0,color=C.steel,gaps=[]}={}){
+export function room({w=20,h=6,d=20,cx=0,cz=0,y=0,color=C.steel,gaps=[],accent=C.cyan,decor=true}={}){
   ground(w,d,{y,cx,cz});
-  const wallM = mat(color,{rough:.8});
+  const wallM = mat(color,{rough:.8,emissive:0x0a1626,ei:.35});
   const mk=(ww,dd,x,z)=>{ const m=box(ww,h,dd,wallM); m.position.set(x,y+h/2,z); G.scene.add(m); addCollider(m); return m; };
   if(!gaps.includes('n')) mk(w,0.6, cx, cz-d/2);
   if(!gaps.includes('s')) mk(w,0.6, cx, cz+d/2);
   if(!gaps.includes('w')) mk(0.6,d, cx-w/2, cz);
   if(!gaps.includes('e')) mk(0.6,d, cx+w/2, cz);
+  if(decor){
+    // glowing corner columns
+    for(const [px,pz] of [[cx-w/2+1,cz-d/2+1],[cx+w/2-1,cz-d/2+1],[cx-w/2+1,cz+d/2-1],[cx+w/2-1,cz+d/2-1]]){
+      const col=new THREE.Mesh(new THREE.CylinderGeometry(.28,.38,h,8), mat(0x101a2c,{emissive:accent,ei:.35,rough:.4}));
+      col.position.set(px,y+h/2,pz); G.scene.add(col);
+      const cap=new THREE.Mesh(new THREE.SphereGeometry(.32,10,10), mat(accent,{emissive:accent,ei:1.4}));
+      cap.position.set(px,y+h+.2,pz); G.scene.add(cap);
+    }
+    // floor edge trim
+    const trim=(ww,dd,x,z)=>{ const t=box(ww,.08,dd,mat(accent,{emissive:accent,ei:1.1})); t.position.set(x,y+.05,z); G.scene.add(t); };
+    trim(w-1,.14, cx, cz-d/2+.6); trim(w-1,.14, cx, cz+d/2-.6);
+    trim(.14,d-1, cx-w/2+.6, cz); trim(.14,d-1, cx+w/2-.6, cz);
+    // warm room light
+    const rl=new THREE.PointLight(0xbcd8ff, 10, Math.max(w,d)*1.4); rl.position.set(cx,y+h-0.8,cz); G.scene.add(rl);
+    // floating shards
+    for(let k=0;k<5;k++){
+      const sh=new THREE.Mesh(new THREE.TetrahedronGeometry(.22+Math.random()*.2),
+        mat(accent,{emissive:accent,ei:1.1}));
+      sh.position.set(cx+(Math.random()-.5)*(w-4), y+h-1.2-Math.random()*1.6, cz+(Math.random()-.5)*(d-4));
+      sh.userData.spin=.5+Math.random(); sh.userData.baseY=sh.position.y; sh.userData.bob=.15;
+      G.animated.push(sh); G.scene.add(sh);
+    }
+  }
 }
 
 // canvas-texture text sprite
