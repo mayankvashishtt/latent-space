@@ -1,19 +1,14 @@
 // HUB — The Residual Stream. A luminous corridor through the model; one gate per mechanism.
 import * as THREE from 'three';
-import { G, spawn, loadLevel, obj, panel } from '../engine.js';
+import { G, spawn, loadLevel, obj, panel, guide, playerNear } from '../engine.js';
 import * as W from '../world.js';
+import { TEXT } from '../text.js';
 
 export default {
   id:0, name:'THE RESIDUAL STREAM',
   tagline:'the signal path through the model',
   respawn:[0,1,52,0],
-  intro:`
-    <p>You are a <em>token</em> — a spark of information inside a vast neural network.</p>
-    <p>Ahead of you runs the <em>residual stream</em>: the highway every thought in this machine travels.
-    Ten chambers branch from it. Each one is a mechanism — attention, gradient descent, retrieval,
-    reward — and each must be understood <em>from the inside</em> before the Output Head will emit you.</p>
-    <p class="quote">Nothing here will lecture you. The rooms are the ideas. Solve them.</p>
-    <p style="font-size:13px;color:#7fa8cc">Walk to a lit gate and press E. Chambers unlock in order.</p>`,
+  intro:TEXT[0].intro,
   build(){
     const s=G.scene;
     s.fog = new THREE.Fog(0x04060e, 20, 95);
@@ -51,6 +46,10 @@ export default {
       W.portalGate({x, z:L.z, name:L.name, sub:L.sub, locked, done, fn:()=>loadLevel(L.i)});
     }
 
+    // THE ACADEMY — library of all 38 lessons, always open, behind spawn
+    W.portalGate({x:0, z:60, name:'THE ACADEMY', sub:'all 38 lessons in plain words · always open',
+      locked:false, done:false, fn:()=>loadLevel(11)});
+
     // codex terminal near spawn
     W.terminal({x:-5.5,z:50, yaw:0.9, label:'THE CODEX', title:'THE CODEX', sub:'what each chamber teaches',
       html:`
@@ -70,12 +69,21 @@ export default {
       Topics not yet built as chambers (scale &amp; MoE, inference cost, multimodal vision, world models…) are
       designed as future <em>Expansion Chambers</em> — see the README.</p>`});
 
-    obj(`THE RESIDUAL STREAM — <b>${G.progress}/10</b> mechanisms understood${G.progress>=10?' · <b style="color:#ffd257">MODEL COMPLETE</b>':''}`);
+    obj(`MAIN HALL — <b>${G.progress}/10</b> rooms finished · walk to a glowing ring, press E${G.progress>=10?' · <b style="color:#ffd257">ALL DONE!</b>':''}`);
 
     // golden state on completion
     if(G.progress>=10){ s.fog=new THREE.Fog(0x0e0a04,20,95);
       const gl=new THREE.PointLight(W.C.gold,20,80); gl.position.set(0,6,-46); s.add(gl); }
 
+
+    // -------- voice guide --------
+    if(G.progress===0){
+      guide([
+        {say:"Hello. You are a tiny piece of information — a token — traveling through an AI brain. I will be your guide. Walk forward down the hallway.",
+         when:()=>G.player.pos.z<46},
+        {say:"See the glowing rings on the left and right? Each one is a room, and each room will make you DO one big idea of AI with your own hands. They unlock in order. The first one — THE NEURON — is glowing on your left. Walk into it and press E. Or, if you want everything explained in plain words first, THE ACADEMY is behind you."},
+      ]);
+    }
     return { update:null, dispose(){}, tick:G.ticks.push(dt=>st.update(dt)) };
   }
 };
