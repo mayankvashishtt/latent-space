@@ -68,6 +68,35 @@ export default {
     planeConsoles(plA, -2.8, 7, '');
     const doorA=W.door({x:0,z:-14,y:Y,axis:'x'});
 
+    // ---- STUCK? SHOW ME — animate the solution while narrating ----
+    let solving=false;
+    function animPlane(pl, thetaTo, offsetTo, dur, then){
+      const t0=pl.theta, o0=pl.offset; let k=0;
+      const fn=(dt)=>{ k+=dt/dur; const e=Math.min(1,k), sm=e*e*(3-2*e);
+        pl.theta=t0+(thetaTo-t0)*sm; pl.offset=o0+(offsetTo-o0)*sm; pl.apply();
+        if(e>=1){ G.ticks.splice(G.ticks.indexOf(fn),1); then&&then(); } };
+      G.ticks.push(fn);
+    }
+    W.button({x:4.8,z:7,y:Y,label:'STUCK? SHOW ME',color:W.C.green,fn:()=>{
+      if(solving||phase!=='A') return; solving=true;
+      toast('Watch the wall — and watch the gold glow follow it.',3200);
+      animPlane(plA, Math.PI/4, 2.7, 3.2, ()=>{ solving=false;
+        toast('The glow now covers ONLY the gold ball. One cut was enough — for THIS pattern.',4200); });
+    }});
+    W.button({x:6.2,z:-19,y:Y,label:'STUCK? SHOW ME',color:W.C.green,fn:()=>{
+      if(solving||phase!=='B') return; solving=true;
+      if(!plB2){
+        toast('First: the 1969 archive grants the second wall…',2600);
+        plB2=makePlane(W.C.gold, 0,-28); plB2.apply();
+        planeConsoles(plB2, 2.0, -19, 'β');
+      }
+      toast('Watch: both walls turn to the SAME diagonal, facing OPPOSITE ways…',3600);
+      animPlane(plB1, Math.PI/4, -2.7, 3.2, ()=>{
+        animPlane(plB2, Math.PI/4+Math.PI, -2.7, 3.2, ()=>{ solving=false;
+          toast('See the glowing CORRIDOR between them? Both golds inside, both blues outside.<br><b>Two cuts made a shape one cut never could. That is a hidden layer.</b>',5600); });
+      });
+    }});
+
     // ================= ACT 2 — THE IMPOSSIBLE CUT (XOR) =================
     W.room({w:24,h:6,d:26,cz:-28,y:Y,gaps:['s','n'],accent:W.C.magenta});
     const ptsB = makePoints([[-D,-D,0],[-D,D,1],[D,-D,1],[D,D,0]], -28);
@@ -147,9 +176,12 @@ export default {
 
     obj('ACT 1 — move the wall of light: <b>gold on its GOLD side, blue on its BLUE side</b>');
 
-    let lastY=null;
+    let lastY=null, stuckT=0;
     onTick(dt=>{
       if(act<3){ zoneA.update(); zoneB.update(); }
+      if(phase==='B' && act<2.5){ stuckT+=dt;
+        if(stuckT>75){ stuckT=-9999;
+          toast('No shame in it — press the green <b>STUCK? SHOW ME</b> button and watch the solution happen.',5200); } }
       // ----- classification feedback -----
       if(act<3){
         const pts = phase==='A'?ptsA:ptsB;
