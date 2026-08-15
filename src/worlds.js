@@ -28,4 +28,3 @@ export const WORLDS = [
 ];
 
 export const FINAL = { i:9, n:'IX · OUTPUT HEAD', d:'the final test — every idea at once, no hints, then the softmax gate', needs:4 };
-export const ACADEMY = { i:10, n:'THE ACADEMY', d:'all 38 course lessons in plain words — always open, never locked' };

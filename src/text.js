@@ -181,8 +181,8 @@ export const TEXT = {
     own eyes.</p>
     <p class="quote">That's the difference between reading about a thing and having BEEN the thing.
     The next token is yours.</p>
-    <p><b>Want to go deeper on anything?</b> Visit THE ACADEMY behind the hallway spawn —
-    all 38 lessons in plain words — or read the full notes on GitHub.</p>`,
+    <p><b>Want to go deeper on anything?</b> The full 38-lecture notes archive is linked below —
+    and more chambers are on the way.</p>`,
     lecture:'supplementary/s07-sampling-and-decoding'
   }
 },

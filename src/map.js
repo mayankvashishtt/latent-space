@@ -1,6 +1,6 @@
 // THE JOURNEY MAP — the whole course on one screen: 4 worlds, stars, and what each chamber teaches.
 import { G, loadLevel, stinger } from './engine.js';
-import { WORLDS, FINAL, ACADEMY } from './worlds.js';
+import { WORLDS, FINAL } from './worlds.js';
 
 function starEarned(w){ return w.chambers.every(c=>G.progress>=c.i); }
 export function starCount(){ return WORLDS.filter(starEarned).length; }
@@ -50,11 +50,12 @@ export function openMap(){
         <span class="chIcon">${fs==='done'?'✓':finalOpen?'▶':'🔒'}</span>
         <div><b>${FINAL.n}</b><span class="chD">${finalOpen?FINAL.d:`locked — earn ${FINAL.needs} stars first (you have ${stars})`}</span></div>
       </div>
-      <div class="ch next academy" data-lvl="${ACADEMY.i}">
-        <span class="chIcon">📖</span>
-        <div><b>${ACADEMY.n}</b><span class="chD">${ACADEMY.d}</span></div>
       </div>
     </div>
+    <div class="mapNote">More of the course — scale &amp; MoE, vision, world models, multi-agent, memory —
+      is being built as future chambers. Until then it lives in
+      <a href="https://github.com/mayankvashishtt/ai-ml-bootcamp-archive" target="_blank">the full notes archive</a>
+      (38 lectures, plain-English rewrite included).</div>
     <div class="mapFoot">
       <button id="mapClose">CLOSE MAP &nbsp;·&nbsp; M</button>
     </div>

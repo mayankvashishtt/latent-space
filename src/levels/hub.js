@@ -45,10 +45,6 @@ export default {
       W.portalGate({x, z:L.z, name:L.name, sub:L.sub, locked, done, fn:()=>loadLevel(L.i)});
     }
 
-    // THE ACADEMY — library of all 38 lessons, always open, behind spawn
-    W.portalGate({x:0, z:60, name:'THE ACADEMY', sub:'all 38 lessons in plain words · always open',
-      locked:false, done:false, fn:()=>loadLevel(10)});
-
     // codex terminal near spawn
     W.terminal({x:-5.5,z:50, yaw:0.9, label:'THE CODEX', title:'THE CODEX', sub:'what each chamber teaches',
       html:`

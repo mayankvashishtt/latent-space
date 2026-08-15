@@ -11,6 +11,5 @@ import fon from './levels/level07.js';
 import rew from './levels/level08.js';
 import gau from './levels/level09.js';
 import out from './levels/level10.js';
-import academy from './levels/academy.js';
 
-boot([hub, learn, tok, emb, att, arc, fon, rew, gau, out, academy]);
+boot([hub, learn, tok, emb, att, arc, fon, rew, gau, out]);
