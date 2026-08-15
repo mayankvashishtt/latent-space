@@ -11,5 +11,6 @@ import l7 from './levels/level07.js';
 import l8 from './levels/level08.js';
 import l9 from './levels/level09.js';
 import l10 from './levels/level10.js';
+import academy from './levels/academy.js';
 
-boot([hub, l1, l2, l3, l4, l5, l6, l7, l8, l9, l10]);
+boot([hub, l1, l2, l3, l4, l5, l6, l7, l8, l9, l10, academy]);
