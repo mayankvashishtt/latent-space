@@ -1,0 +1,166 @@
+// III · THE TOKENIZER — run BPE by hand, then hit the strawberry wall.
+import * as THREE from 'three';
+import { G, spawn, obj, toast, complete, chime, buzz, onTick, hold, dropHeld } from '../engine.js';
+import * as W from '../world.js';
+
+export default {
+  id:3, name:'III · THE TOKENIZER', tagline:'what the model sees',
+  respawn:[0,1,14,0],
+  intro:`
+    <p>Before any thought happens, text must become tokens — and the machine that decides the pieces
+    is in front of you, half-built.</p>
+    <p>Its corpus hangs in the air: <code>l o w &nbsp; l o w e r &nbsp; l o w e s t</code>.
+    Finish building its vocabulary the only way BPE knows how:
+    <b>merge the most frequent adjacent pair</b>. Three times.</p>
+    <p class="quote">Then a second room will ask you a question this machine has made almost impossible to answer.</p>`,
+  codex:{
+    html:`<p>You ran <b>Byte-Pair Encoding</b> — the exact algorithm that builds GPT-4's vocabulary.
+      Count adjacent pairs, merge the most frequent, repeat. Nobody designs the tokens;
+      <em>frequency does</em>. That's why real tokenizers split "artificial" into
+      <code>art·ificial</code> — statistics, not linguistics.</p>
+      <p>Then the monoliths: you were asked to count the R's in STRAWBERRY while seeing only
+      <code>[STR][AW][BERRY]</code> — token IDs, no letters. You needed a tool to crack them open.</p>
+      <p>So does the model. <b>It never sees letters at all.</b> The famous "count the r's in strawberry"
+      failure is not a reasoning failure — it's a <em>perception</em> failure. Asking was like asking
+      someone to count brushstrokes in a photo of a painting.</p>
+      <p class="quote">If the model can't see a pattern in the tokens, it can't learn the meaning underneath it.</p>`,
+    lecture:'notes/week-03-transformers-part-1'
+  },
+  build(){
+    const s=G.scene;
+    s.fog=new THREE.Fog(0x04060e,18,60);
+    W.lights(s); spawn(0,1,14,0);
+    W.room({w:34,h:6,d:34,cz:0,gaps:['n']});
+    W.room({w:26,h:7,d:30,cz:-33,gaps:['s']});
+
+    // ---------------- ROOM A: BPE ----------------
+    let seq='low lower lowest'.split('').map(ch=>ch===' '?'·':ch); // tokens as chars, '·' = space marker
+    let tiles=[], bridges=[];
+    const tileY=1.7, span=()=> (seq.length-1)*1.9;
+
+    function layout(){
+      tiles.forEach(t=>{ s.remove(t.grp); s.remove(t.lbl); });
+      bridges.forEach(b=>{ s.remove(b.m); }); bridges=[]; tiles=[];
+      const x0=-span()/2;
+      seq.forEach((tok,i)=>{
+        const w=Math.max(1.2,0.55*tok.length+0.6);
+        const grp=W.box(w,1.2,0.35, W.mat(tok==='·'?0x22364e:W.C.deep,{emissive:tok==='·'?0x22364e:0x1a5a7a, ei:.8}));
+        grp.position.set(x0+i*1.9, tileY, -4); s.add(grp);
+        const lbl=W.text(tok==='·'?'␣':tok,{size:.55,color:'#bfe8ff',bold:true});
+        lbl.position.set(x0+i*1.9, tileY+1.1, -4); s.add(lbl);
+        tiles.push({grp,lbl,tok,i});
+      });
+      // merge handles between adjacent non-space pairs
+      for(let i=0;i<seq.length-1;i++){
+        if(seq[i]==='·'||seq[i+1]==='·') continue;
+        const m=new THREE.Mesh(new THREE.SphereGeometry(.22,12,12),W.mat(W.C.magenta,{emissive:W.C.magenta,ei:1.1}));
+        m.position.set(-span()/2+i*1.9+0.95, tileY-1.0, -4); s.add(m);
+        const pair=seq[i]+seq[i+1];
+        m.userData.pair=[i,pair];
+        bridges.push({m, i, pair});
+      }
+      bridges.forEach(b=>{
+        const {m,i,pair}=b;
+        m.userData.interact={prompt:`merge "${pair}"`, fn:()=>attempt(i,pair)};
+        G.interactables.push(m);
+      });
+    }
+    function counts(){
+      const c={};
+      for(let i=0;i<seq.length-1;i++){ if(seq[i]==='·'||seq[i+1]==='·') continue;
+        const p=seq[i]+seq[i+1]; c[p]=(c[p]||0)+1; }
+      return c;
+    }
+    let merges=0;
+    const scoreLbl=W.label(new THREE.Vector3(0,5,-4),'MERGES 0 / 3',{size:.45,color:'#9fd8ff'});
+    function attempt(i,pair){
+      const c=counts(); const best=Math.max(...Object.values(c));
+      if(c[pair]===best){
+        // merge every occurrence of this pair
+        const out=[]; let k=0;
+        while(k<seq.length){
+          if(k<seq.length-1 && seq[k]!=='·'&&seq[k+1]!=='·' && seq[k]+seq[k+1]===pair){ out.push(pair); k+=2; }
+          else { out.push(seq[k]); k++; }
+        }
+        seq=out; merges++;
+        toast(`MERGED "${pair}" ×${c[pair]} — new token added to vocabulary`);
+        scoreLbl.material.map.dispose();
+        const nl=W.text(`MERGES ${merges} / 3`,{size:.45,color:'#9fd8ff'}); scoreLbl.material=nl.material; scoreLbl.scale.copy(nl.scale);
+        // clear old interactables of bridges
+        bridges.forEach(b=>{ const ix=G.interactables.indexOf(b.m); if(ix>=0)G.interactables.splice(ix,1); });
+        layout();
+        if(merges>=3){ doorA.open(); chimeAll(); toast('VOCABULARY BUILT — "low" is now ONE token. Proceed north.'); obj('ROOM B — the monoliths ask a question'); }
+      } else {
+        buzz(); toast(`"${pair}" appears ${c[pair]}×. Another pair appears ${best}×.<br><b>BPE always merges the MOST FREQUENT pair.</b>`,3600);
+      }
+    }
+    const chimeAll=()=>{ chime(); };
+    layout();
+    const doorA=W.door({x:0,z:-17,axis:'x'});
+    obj('ROOM A — <b>merge the most frequent adjacent pair</b> · 3 merges to build the vocabulary');
+
+    // ---------------- ROOM B: STRAWBERRY ----------------
+    // three opaque token monoliths
+    const toks=[['STR',9821],['AW',675],['BERRY',19772]];
+    const letterGroups=[];
+    toks.forEach(([t,id],i)=>{
+      const x=-7+i*7;
+      const mono=W.box(3.6,4.2,1.2, W.mat(0x101b30,{emissive:0x14335c, ei:.5}));
+      mono.position.set(x,2.1,-38); s.add(mono);
+      const col={min:new THREE.Vector3(x-1.8,0,-38.6),max:new THREE.Vector3(x+1.8,4.2,-37.4),solid:true}; G.colliders.push(col);
+      W.label(new THREE.Vector3(x,4.9,-38),`token #${id}`,{size:.34,color:'#5f86ab'});
+      mono.userData.tok=t; mono.userData.x=x; mono.userData.opened=false;
+      mono.userData.interact={prompt:'detokenize (requires ray)', fn:()=>{
+        if(!hasRay){ buzz(); toast('The surface is sealed. Token IDs have no letters inside — <b>find the DETOKENIZER RAY</b>.'); return; }
+        if(mono.userData.opened) return; mono.userData.opened=true;
+        mono.material.opacity=.12; mono.material.transparent=true; mono.material.emissiveIntensity=.15;
+        t.split('').forEach((ch,k)=>{
+          const l=W.text(ch,{size:.7,color: ch==='R'?'#ff5c6a':'#cfe6ff',bold:true});
+          l.position.set(x-((t.length-1)*0.45)+k*0.9, 2.1, -37.1); s.add(l); letterGroups.push(l);
+        });
+        toast(`token #${id} → letters revealed`);
+      }};
+      G.interactables.push(mono);
+    });
+    W.label(new THREE.Vector3(0,6.2,-38),'HOW MANY R’S IN STRAWBERRY?',{size:.55,color:'#ffd257',bold:true});
+    W.label(new THREE.Vector3(0,5.5,-38),'place that many orbs on the altar',{size:.3,color:'#8fb8d8'});
+
+    // detokenizer ray pickup
+    let hasRay=false;
+    const rayM=new THREE.Mesh(new THREE.ConeGeometry(.3,1.1,8),W.mat(W.C.green,{emissive:W.C.green,ei:1.6}));
+    rayM.rotation.z=Math.PI/2; rayM.position.set(11,1.4,-30); rayM.userData.baseY=1.4; rayM.userData.bob=.12; G.animated.push(rayM); s.add(rayM);
+    W.label(new THREE.Vector3(11,2.5,-30),'DETOKENIZER RAY',{size:.3,color:'#5cff9d'});
+    rayM.userData.interact={prompt:'take detokenizer ray', fn:()=>{ hasRay=true; s.remove(rayM);
+      const ix=G.interactables.indexOf(rayM); if(ix>=0)G.interactables.splice(ix,1);
+      toast('RAY ACQUIRED — the model never gets one of these.'); }};
+    G.interactables.push(rayM);
+
+    // orb dispenser + altar
+    let carried=0, placed=0;
+    const disp=W.button({x:-10,z:-30,label:'TAKE ORB',color:W.C.cyan,fn:()=>{
+      if(carried>=5){ toast('hands full'); return; } carried++;
+      toast(`carrying ${carried} orb${carried>1?'s':''}`); }});
+    const altar=new THREE.Mesh(new THREE.CylinderGeometry(1.3,1.6,1,10),W.mat(0x1a2440,{emissive:0x2a4a7a,ei:.6}));
+    altar.position.set(0,.5,-44); s.add(altar); G.colliders.push({min:new THREE.Vector3(-1.5,0,-45.4),max:new THREE.Vector3(1.5,1,-42.6),solid:true});
+    const placedOrbs=[];
+    const altarLbl=W.label(new THREE.Vector3(0,2.4,-44),'ALTAR · 0',{size:.4,color:'#bfe8ff'});
+    altar.userData.interact={prompt:'place / submit orbs', fn:()=>{
+      if(carried>0){ placed+=carried; carried=0;
+        while(placedOrbs.length<placed && placedOrbs.length<6){
+          const o=new THREE.Mesh(new THREE.SphereGeometry(.3,14,14),W.mat(W.C.gold,{emissive:W.C.gold,ei:1.2}));
+          o.position.set(-0.9+ (placedOrbs.length%3)*0.9, 1.35, -44 + (placedOrbs.length>2?0.7:0)); s.add(o); placedOrbs.push(o);
+        }
+        const nl=W.text(`ALTAR · ${placed}`,{size:.4,color:'#bfe8ff'}); altarLbl.material=nl.material; altarLbl.scale.copy(nl.scale);
+        toast(`${placed} placed — submit again to answer`); return;
+      }
+      if(placed===3){ chime(); toast('CORRECT — three R’s. You could count them. <b>You had the letters.</b>');
+        setTimeout(()=>complete(),1000); }
+      else { buzz(); placed=0; placedOrbs.forEach(o=>s.remove(o)); placedOrbs.length=0;
+        const nl=W.text('ALTAR · 0',{size:.4,color:'#bfe8ff'}); altarLbl.material=nl.material; altarLbl.scale.copy(nl.scale);
+        toast('WRONG. Without the letters you are guessing — <b>exactly like the model.</b> Crack the monoliths first.',3800); }
+    }};
+    G.interactables.push(altar);
+
+    return {};
+  }
+};
