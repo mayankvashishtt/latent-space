@@ -130,19 +130,19 @@ export default {
 
     // -------- voice guide --------
     guide([
-      {say:"Read the sentence made of pillars: The animal didn't cross the street because IT was too tired. Question: what does IT mean — the animal, or the street? Think about what was TIRED. Walk to the buttons.",
+      {who:'nova', say:"Read the sentence made of pillars: The animal didn't cross the street because IT was too tired. So — what does IT mean, the animal or the street? Think about what was actually tired. Walk to the buttons.",
        when:()=>playerNear(-6,0,8)},
-      {say:"You hold exactly ONE point of attention. Not more. Not less. This is the deepest rule in ChatGPT: attention always adds up to exactly one — giving more to one word means taking it from another. Spend your pool: press the button for the word IT should point to. All of it.",
+      {who:'bit', say:"You're holding exactly ONE point of my attention. Not one point one. ONE. This is the deepest rule in my whole head: attention always adds up to exactly one, so giving more to one word STEALS it from the rest. Spend the whole pool on the right word.",
        when:()=>pool<=0.01},
-      {say:"Pool spent. Now press CONFIRM and see if you routed the meaning correctly.",
+      {who:'nova', say:"Pool spent. Press CONFIRM — let's see how you routed the meaning.",
        when:()=>phase===2},
-      {say:"Correct — the ANIMAL was tired. But wait... watch the sentence. One word is changing.",
+      {who:'bit', say:"Correct, the ANIMAL was tired. But don't relax. Watch the sentence. Watch it...",
        when:()=>alloc.street>=0.5},
-      {say:"Now it says WIDE. Same sentence, one word different — and suddenly IT means the STREET. This is the whole magic: a word's meaning is computed fresh from its neighbors, every single time. Confirm your new routing.",
+      {who:'nova', say:"Now it says WIDE — and suddenly IT means the STREET. Same sentence, one word changed, whole meaning moved. That's the superpower: meaning gets computed fresh from the neighbors, every time. Confirm your new answer.",
        when:()=>G.player.pos.z<-24},
-      {say:"Walk the corridor. See the dark pillars behind glass? Those are FUTURE words. An AI predicting the next word is never allowed to peek ahead — not discouraged: mathematically IMPOSSIBLE, blocked at minus infinity. Read the MASK terminal if you like, then keep going.",
+      {who:'bit', say:"See the dark pillars behind glass? Future words. When I'm predicting the next word, I am NEVER allowed to peek ahead — not discouraged, mathematically walled off. Otherwise training would be an exam with the answers printed on it. Keep walking.",
        when:()=>G.player.pos.z<-44},
-      {say:"Last room. The gate needs the K and V values of the old words plus your fresh question. Look — the old values are already sitting there, CACHED, glowing blue. The old words never change, so their math never changes. So... would you recompute it all, or use the cache? Choose a button."},
+      {who:'nova', say:"Last room. The gate needs the stored values of the old words plus your fresh question. Look — the old values are already sitting there, cached, glowing blue. Old words never change, so their math never changes. So: recompute everything... or use the cache? Choose a button."},
     ]);
     return {};
   }

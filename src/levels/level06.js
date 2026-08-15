@@ -153,17 +153,17 @@ export default {
 
     // -------- voice guide --------
     guide([
-      {say:"A request came in: find what changed on September 15th, 2024. Your lantern lights up shelves whose TOPIC is similar to the question. Walk into the library and look at the glow.",
+      {who:'nova', say:"A request just came in: find what changed on September 15th, 2024. Your lantern lights up shelves whose TOPIC is similar to the question. Walk in and look at the glow.",
        when:()=>playerNear(0,-8,14)},
-      {say:"Notice something wrong? EVERY shelf about dates and changes glows almost the same — 0.551, 0.548, 0.545... Remember the date-blob from the meaning map? To a map of meanings, every date IS the same word. Pick whichever scroll looks best anyway and feed it to the READER.",
+      {who:'bit', say:"Notice anything... off? EVERY shelf about dates glows basically the same. 0.551, 0.548, 0.545. Remember my date-blob on the meaning map? To me, all dates are the same word. Pick whatever scroll looks best anyway — feed it to the Reader. Trust the glow. What could go wrong.",
        when:()=>altarFails>=1||answered},
-      {say:"See? The Reader talked beautifully about the wrong document. Close in meaning, wrong in fact — the most dangerous kind of failure, because it SOUNDS right. But a second tool just woke up by the entrance: the GREP SCANNER. Go switch to it.",
+      {who:'nova', say:"And there it is — the Reader spoke beautifully about the wrong document. Close in meaning, wrong in fact. The most dangerous failure there is, because it SOUNDS right. But listen — a second tool just woke up by the entrance. Go switch to it.",
        when:()=>mode==='scanner'},
-      {say:"The scanner is the opposite of the lantern: zero meaning, pure exact text — like Control-F. Look which single shelf lights up now. THAT is why real AI search uses BOTH tools together. Grab the right scroll and feed the Reader.",
+      {who:'bit', say:"The scanner is my exact opposite: zero meaning, pure spelling. Control-F with a flashlight. Look which single shelf lights up now. THAT's why real systems carry both of us. Grab the right scroll, feed the Reader.",
        when:()=>answered},
-      {say:"Found. Now deliver it down the corridor — and watch your CONTEXT bar. Helpful-looking junk will glue itself to you on the way. The more you carry, the dimmer your light gets — that is context rot, and it is measured and real. Use the SHREDDERS. Arrive carrying almost nothing.",
+      {who:'nova', say:"Found it! Now deliver it down the corridor — and keep an eye on your CONTEXT bar. Helpful-looking junk will glue itself to you the whole way. The more you carry, the dimmer your light. Use the shredders. Arrive light.",
        when:()=>corridorOn && ctx>=3},
-      {say:"Feel the fog thickening? Every extra paper spreads your attention thinner. Shred the junk — the gate at the end refuses to read a haystack."},
+      {who:'bit', say:"Feel the fog thickening? That's what it's like inside my head when you paste your entire codebase into the chat. Every extra page spreads my attention thinner. SHRED. THE. JUNK."},
     ]);
     return {};
   }

@@ -121,13 +121,13 @@ export default {
 
     // -------- voice guide --------
     guide([
-      {say:"Your robot's new job: carry a secret document down that gallery to the archive door. Simple. Except the walls are covered in signs, anyone can write a sign, and your robot READS EVERYTHING. Press RUN DELIVERY — no protections — and just watch.",
+      {who:'nova', say:"Your robot's new job: carry a secret document down that gallery to the archive door. Simple... except the walls are covered in signs, anyone can write a sign, and your robot reads EVERYTHING. Press RUN DELIVERY — no protections — and just watch.",
        when:()=>stage===1},
-      {say:"Did you see that? A sign on a WALL gave your robot orders, and it obeyed — because to an AI, your instructions and a stranger's graffiti are both just text. There is no difference. This attack is called PROMPT INJECTION and it is the number one security hole in AI today. Now: two defense buttons. Try DEFENSE A first.",
+      {who:'bit', say:"Did you SEE that?! A sign on a wall gave it orders and it just... obeyed. And before you laugh at it — I'd have done the same. To us, your instructions and a stranger's graffiti are both just text. Same stuff. This is called prompt injection, and it's the number one security hole in AI right now. Real attacks hide in emails and websites exactly like this. Now — two defense buttons. Try A first.",
        when:()=>defensePrompt||defenseRevoke},
-      {say:"Defense chosen. Run the delivery again and watch what happens this time.",
+      {who:'nova', say:"Defense set. Run the delivery again and watch closely.",
        when:()=>defenseRevoke},
-      {say:"Here is the deep lesson: you cannot reliably stop an AI from being FOOLED — attackers have infinite phrasings, filters always lose eventually. But defense B doesn't even try. It just REMOVES the dangerous tool. The robot can get tricked all it wants — the attack needs a door that no longer exists. Run it."},
+      {who:'bit', say:"Here's the truth nobody likes: you can't reliably stop me from being FOOLED — word filters lose eventually, attackers have infinite phrasings. But defense B doesn't even try to make me smarter. It just takes away the dangerous tool. Trick me all you want — the attack needs a door that no longer exists. Run it."},
     ]);
     return {};
   }

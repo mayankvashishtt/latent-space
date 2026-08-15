@@ -113,17 +113,17 @@ export default {
 
     // -------- voice guide --------
     guide([
-      {say:"See the room behind the glass? A key, a locked vault, and a sleeping robot. You will NEVER go in there. The robot does everything — and here is the catch: it only knows what its tool descriptions tell it. Walk to the two DESCRIPTION terminals.",
+      {who:'nova', say:"See the room behind the glass? A key, a locked vault, and a little sleeping robot. You are never going in there — the robot does everything. And here's the catch: it only knows what its tool descriptions tell it. Walk to the two description terminals.",
        when:()=>playerNear(-9,8,6)},
-      {say:"You are writing the robot's instruction manual. Read both descriptions for its SCAN tool — one is lazy, one is clear. Pick either one. Honestly? Pick the lazy one first. Watching things fail teaches more.",
+      {who:'bit', say:"You're about to write its instruction manual. Two options for its SCAN tool — one lazy, one clear. And listen: pick the LAZY one first. I'm serious. Watching things fail is the best teacher in this whole building.",
        when:()=>cfg.scanDesc!==null},
-      {say:"Description chosen. Now press RUN THE LOOP and watch the big screen. You'll see the robot's actual thoughts: think, act, observe, repeat.",
+      {who:'nova', say:"Chosen. Now press RUN THE LOOP and watch the big screen — you'll see its actual thoughts, live.",
        when:()=>ranOnce},
-      {say:"Watch closely. Every line on that screen is the loop: THOUGHT, then ACTION, then OBSERVATION of what happened. This exact loop is how every AI agent on earth works — including the ones that write code.",
+      {who:'bit', say:"Watch each line. THOUGHT, then ACTION, then OBSERVATION of what actually happened. Round and round. That loop is every AI agent on earth — including the fancy ones that write code. There's no other secret. It's loops all the way down.",
        when:()=>solved || (!running && ranOnce && cfg.scanDesc==='vague')},
-      {say:"It failed — but look WHY. The robot wasn't stupid; it was BLIND. 'Does stuff with things' told it nothing, so it guessed. And notice: when it hit the locked vault, the error came back as a MESSAGE it could read, not a crash. Now fix the description and run again.",
+      {who:'nova', say:"It failed — but look WHY. It wasn't stupid, it was blind. 'Does stuff with things' told it nothing, so it guessed. And did you catch the locked vault sending back an error it could READ? That's what saved it from crashing. Now fix the description and run again.",
        when:()=>solved},
-      {say:"Three moves: scan, grab, unlock. Same robot. Same brain. Better words. When an AI agent seems dumb, check its tool descriptions before blaming the AI — that is real engineering advice."},
+      {who:'bit', say:"Scan, grab, unlock. Three moves. Same robot, same brain, better WORDS. Next time an AI agent seems dumb to you, check what its tools say before you blame the AI. That sentence is worth actual money in the real world."},
     ]);
     return {};
   }

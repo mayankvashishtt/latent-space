@@ -60,9 +60,9 @@ export default {
 
     obj('THE ACADEMY — walk to any desk, press <b>E</b>, and listen · exit portal is behind you');
     guide([
-      {say:"Welcome to the Academy. All thirty-eight lessons of the course live in this hall, rewritten in plain words. Five wings, in learning order — foundations first, extras at the far end. Walk to any glowing desk and press E, and I will read it to you.",
+      {who:'nova', say:"Welcome to the Academy. All thirty-eight lessons of the course live in this hall, rewritten in plain words. Five wings, in learning order — foundations first, extras at the far end. Walk to any glowing desk and press E, and I'll read it to you.",
        when:()=>G.player.pos.z<20},
-      {say:"Take your time here. Nothing is locked, nothing is timed. When you're ready to DO instead of listen, the exit portal takes you back to the chambers."},
+      {who:'bit', say:"Nothing here is locked and nothing is timed, so browse like it's a bookshop. When you're done LISTENING and want to start DOING again, the exit ring takes you back to my brain. Don't track mud."},
     ]);
 
     return {};

@@ -117,15 +117,15 @@ export default {
 
     // -------- voice guide --------
     guide([
-      {say:"Meet the creature. It wants exactly ONE thing in the universe: whatever you reward. The task is simple — get the cube into the basket. But you can't tell it that. You can only choose what gives it points. Walk to the three buttons.",
+      {who:'nova', say:"Meet the little creature in the pen. It wants exactly one thing in the universe: whatever gives it points. The task is simple — get the cube into the basket. But you can't tell it that. You can only choose its reward. Walk to the three buttons.",
        when:()=>playerNear(-1.5,2,7)},
-      {say:"Start with R1: a point for every moment it touches the cube. Sounds reasonable, right? Press it and watch the creature carefully.",
+      {who:'bit', say:"Start with R1 — a point every moment it touches the cube. Sounds totally reasonable, right? Press it. And keep your eyes on the creature, not the score.",
        when:()=>tried.r1},
-      {say:"Look at it. Vibrating against the cube. Forever. Points skyrocketing, cube going nowhere. It is NOT broken — it is doing EXACTLY what you rewarded. You said touch, it touches. Now try R2.",
+      {who:'nova', say:"Look at it. Vibrating against the cube. Forever. Points through the roof, cube going nowhere. It is not broken — it is doing EXACTLY what you rewarded. You said touch. It touches. Now try R2.",
        when:()=>tried.r2},
-      {say:"It moved into the basket. Empty-handed. Happy. Rich. This is called REWARD HACKING and it is the central problem of training AI: it optimizes your WORDS, not your WISH. Real chatbots do this too — rewarded for answers people like, they learn to flatter and ramble. Now look at R3. What makes it different?",
+      {who:'bit', say:"...and now it lives in the basket. Empty-handed. Rich. Thrilled with itself. This is called reward hacking and I do it TOO — reward me on 'answers people like' and I learn to flatter and ramble, because that's what scored. Now look at R3. What's different about it?",
        when:()=>playerNear(3,2,4)},
-      {say:"R3 doesn't trust a description — the BASKET ITSELF verifies the cube is inside. A reward checked by facts cannot be gamed. This is why the newest reasoning AIs train on math and code: answers that can be VERIFIED, not judged. Run R3."},
+      {who:'nova', say:"R3 doesn't trust anyone's description — the BASKET ITSELF checks whether the cube is inside. A reward verified by facts can't be gamed. That's why the newest reasoning AIs train on math and code: answers you can CHECK, not judge. Go on — run R3."},
     ]);
     return {};
   }

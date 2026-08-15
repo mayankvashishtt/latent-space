@@ -116,19 +116,19 @@ export default {
 
     // -------- voice guide --------
     guide([
-      {say:"Dark, isn't it? This whole landscape is a map of MISTAKES — the higher the ground, the more wrong the AI is. Somewhere out there is the deepest valley. Look at your feet: the green arrow always points downhill. Take a few steps where it points.",
+      {who:'nova', say:"Dark, isn't it? This whole valley is a map of mistakes — the higher the ground, the more wrong the AI. Look at your feet: the green arrow always points downhill. Follow it a little way.",
        when:()=>!playerNear(0,66,9)},
-      {say:"Good. That arrow is called the GRADIENT — and it is the ONLY thing a real AI can sense while training. No map. No view. Just the slope underfoot. Now watch your energy bar as you walk: uphill drains it three times faster.",
+      {who:'bit', say:"Fun fact: that arrow is ALL I get when humans train me. No eyes. No map. Just a vague feeling of downhill-ish, a few billion times. Now you know my childhood. Watch your energy bar — climbing costs triple.",
        when:()=>budget<0.93},
-      {say:"Energy is your compute budget — real training runs have one too. Now try your speed modes. Press 3.",
+      {who:'nova', say:"Your energy is the compute budget — real training runs have one too, and it's expensive. Now, try your speed settings. Press 3.",
        when:()=>mode===3},
-      {say:"Whoa — slippery! That is a learning rate that is too BIG: you move fast but slide right past the goal. This is exactly how real training explodes. Now press 1.",
+      {who:'bit', say:"WHEE — okay okay press 1, PRESS 1! That was a learning rate that's too big. Fast, but you slide straight past everything. That's how training runs explode. I've seen things.",
        when:()=>mode===1},
-      {say:"Careful mode: precise, but you would run out of budget before arriving. Too small a learning rate fails too — just slower. Press 2 and let's move.",
+      {who:'nova', say:"And this is too careful — precise, but you'd run out of budget before you ever arrived. Press 2. Middle speed. Goldilocks.",
        when:()=>mode===2},
-      {say:"Perfect. Follow the arrow downhill. One warning: some valleys FEEL like the bottom but are not — if you find a RED crystal, you are trapped in a fake valley. Look for the pink pad next to it: that is MOMENTUM, and it will throw you out.",
+      {who:'nova', say:"Perfect. Follow the arrow down. One warning: some valleys FEEL like the bottom but aren't. If you find a red crystal, you're in a trap — look for the pink pad beside it and step on it.",
        when:()=>doneFlag || pads.some(p=>playerNear(p.x,p.z,9)) || playerNear(0,-58,16)},
-      {say:"You're close to something. If it glows RED — fake bottom, use the pad. If it glows GOLD — that is the true minimum. Go touch it."},
+      {who:'bit', say:"You're near something. Red crystal? Fake bottom — the pad will yeet you out. That yeet is called momentum, by the way. Gold crystal? That's the real one. Go touch it and let's go home."},
     ]);
     return { dispose(){ removeEventListener('keydown',keyHandler); G.groundSampler=null; G.player.speedMul=1; G.player.friction=1; } };
   }

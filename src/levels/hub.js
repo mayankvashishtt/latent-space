@@ -79,9 +79,13 @@ export default {
     // -------- voice guide --------
     if(G.progress===0){
       guide([
-        {say:"Hello. You are a tiny piece of information — a token — traveling through an AI brain. I will be your guide. Walk forward down the hallway.",
-         when:()=>G.player.pos.z<46},
-        {say:"See the glowing rings on the left and right? Each one is a room, and each room will make you DO one big idea of AI with your own hands. They unlock in order. The first one — THE NEURON — is glowing on your left. Walk into it and press E. Or, if you want everything explained in plain words first, THE ACADEMY is behind you."},
+        {who:'nova', say:"Oh — it's awake! Hello, little token. I'm Nova. I'll be showing you around this brain today.",
+         when:()=>G.player.pos.z<48},
+        {who:'bit', say:"And I'm Bit. I LIVE here. This is my brain you're walking through, so wipe your feet. Keep moving.",
+         when:()=>G.player.pos.z<38},
+        {who:'nova', say:"See the glowing rings, left and right? Each one is a room, and in each room you'll DO one big idea of how AI works. With your hands. No homework, I promise.",
+         when:()=>G.player.pos.z<28},
+        {who:'bit', say:"Press M if you want the map — the whole journey, four worlds, one star each. Collect four stars and the big golden door at the end opens. Yes, stars. Humans love stars."},
       ]);
     }
     return { update:null, dispose(){}, tick:G.ticks.push(dt=>st.update(dt)) };

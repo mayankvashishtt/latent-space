@@ -140,17 +140,17 @@ export default {
 
     // -------- voice guide --------
     guide([
-      {say:"Welcome to the map of MEANING. Every word an AI knows lives HERE — as a location. Look around: animals cluster together, vehicles together, food together. Similar meaning means close together. Walk toward any glowing circle.",
+      {who:'nova', say:"Welcome to the prettiest place in the whole brain — the map of meaning. Every word Bit knows lives here as a location. Animals cluster over there, vehicles there, food there. Go walk toward any glowing circle.",
        when:()=>playerNear(-24,-6,10)||playerNear(24,-6,10)||playerNear(0,8,10)||playerNear(0,-30,12)},
-      {say:"Now — three words are glowing RED. They got filed in the WRONG neighborhood. Find one and press E to pick it up.",
+      {who:'bit', say:"It's my filing system, and SOMEONE — not naming names — misfiled three words. They're glowing red. Find one and press E to pick it up.",
        when:()=>pickedOnce},
-      {say:"Got it. Carry it to the circle where its MEANING belongs, stand inside the ring, and press E to drop it. The circle itself will judge you.",
+      {who:'nova', say:"Got it! Now carry it to the circle where its MEANING belongs. Stand inside the ring and press E to drop it. The circle will judge for itself.",
        when:()=>filed>=1},
-      {say:"Accepted! Notice: the circle didn't care about spelling — only about where the word BELONGS. That is how AI stores meaning: position, not letters. File the other two.",
+      {who:'bit', say:"Accepted. Notice it didn't care about spelling — only about the neighborhood. Puppy lives near dog because of what it MEANS. That's how I store everything. Two more, please. My filing anxiety is real.",
        when:()=>filed>=3},
-      {say:"All filed. Now for one of the most beautiful tricks in all of AI. A platform just rose on the word KING, in the royalty circle. Go stand on it.",
+      {who:'nova', say:"All filed! Now for my favorite trick in all of AI. A platform just rose on the word KING. Go stand on it.",
        when:()=>playerNear(-4.2,-30,3.5)},
-      {say:"Because meanings are positions, you can do MATH on them. King, minus man, plus woman, equals...? Use the buttons to pick exactly those two vectors: MINUS MAN, then PLUS WOMAN. Choose wrong and you'll drift into the void between meanings."},
+      {who:'bit', say:"Because meanings are positions, you can do MATH on them. King, minus man, plus woman, equals... well. Pick exactly those two vectors with the buttons. Pick wrong and you'll drift into the void between meanings. It's fine. Probably."},
     ]);
     return {};
   }

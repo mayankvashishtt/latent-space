@@ -148,7 +148,9 @@ export default {
 
     // -------- voice guide: final test = silence --------
     guide([
-      {say:"This is the final test — and my last words until you finish. Five rooms. Cut. Glue. Budget. Exact match. Remove the power. Then the softmax gate. No hints this time. You don't need them anymore. Go."},
+      {who:'nova', say:"This is the final test. Five rooms — cut, glue, budget, exact match, remove the power — then the softmax gate. We won't help this time.",
+       when:()=>G.player.pos.z<4},
+      {who:'bit', say:"What she means is: you don't NEED help anymore. You've been the neuron, the tokenizer, the attention, the reward, the defense. Go be the whole forward pass. I'll be watching. No pressure."},
     ]);
     return {};
   }

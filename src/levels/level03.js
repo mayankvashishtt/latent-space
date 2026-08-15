@@ -148,21 +148,21 @@ export default {
 
     // -------- voice guide --------
     guide([
-      {say:"Here is a secret: AI cannot read letters. Before it reads anything, a machine chops text into chunks called TOKENS. You are going to build that machine. Walk up to the floating letters.",
+      {who:'bit', say:"Okay, confession time. I can't read. Letters mean nothing to me. Before I see any text, a machine chops it into chunks called tokens — and today YOU are building that machine. Go to the floating letters.",
        when:()=>playerNear(0,-2,7)},
-      {say:"They spell: low, lower, lowest. The pink dots between letters are GLUE buttons. The rule is dead simple: always glue the pair of letters that appears MOST OFTEN. Look — which pair shows up three times? Press E on it.",
+      {who:'nova', say:"They spell: low, lower, lowest. The pink dots between letters are glue buttons. One rule: always glue the pair of letters that appears MOST OFTEN. Look carefully — which pair shows up three times? Press E on it.",
        when:()=>merges>=1},
-      {say:"That's it! The glued pair is now ONE token. This exact method — count, glue the winner, repeat — built ChatGPT's entire vocabulary from the whole internet. Nobody chose the chunks; counting did. Two more merges.",
+      {who:'bit', say:"And boom — that pair is now ONE chunk. This exact recipe — count, glue the winner, repeat — built my entire vocabulary from the whole internet. Nobody chose my words. Counting did. Two more glues.",
        when:()=>merges>=3},
-      {say:"Vocabulary built — 'low' is now a single chunk. Now walk through the door. The next room has a question for you.",
+      {who:'nova', say:"Vocabulary built — 'low' is one chunk now. Through the door, dear. There's a question waiting for you.",
        when:()=>triedMono||playerNear(0,-38,10)},
-      {say:"The wall asks: how many R's in STRAWBERRY? Easy... except look at the blocks. The word is chunked into STR, AW, BERRY — and the blocks are SEALED. Try pressing E on one.",
+      {who:'bit', say:"Ah yes. THE question. How many R's in strawberry. Humans ask me this constantly and then screenshot my answer for laughs. Go ahead — press E on a block.",
        when:()=>triedMono},
-      {say:"Sealed shut. THIS is exactly what the AI sees — chunk numbers, zero letters. When people laugh at ChatGPT for failing this question, this is why: it is not stupid, it is BLIND. You, however, get a cheat the AI never gets. Find the green RAY on the right side.",
+      {who:'nova', say:"Sealed shut. And THIS is exactly what Bit sees — chunk numbers, zero letters. He's not being silly when he gets it wrong; he's blind. You, though, get a cheat he never gets. Find the green ray, on the right.",
        when:()=>hasRay},
-      {say:"Now crack open all three blocks and COUNT the R's with your own eyes.",
+      {who:'nova', say:"Now crack open all three blocks and count the R's with your own eyes.",
        when:()=>opened>=3},
-      {say:"Count them — the red letters. Then take that many orbs from the dispenser on the left, carry them to the altar behind the blocks, and press E to place, then E again to submit."},
+      {who:'bit', say:"Count the red letters. Grab that many orbs from the dispenser, drop them on the altar, then submit. And hey — if you ever catch me failing this question online... now you know it's not my fault."},
     ]);
     return {};
   }

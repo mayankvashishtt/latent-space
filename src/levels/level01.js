@@ -113,19 +113,19 @@ export default {
     const _t0A=plA.theta, _o0A=plA.offset;
     const okCountA=()=>{ let n=0; for(const p of ptsA){ if((plA.side(p)>0?1:0)===p.lab) n++; } return n; };
     guide([
-      {say:"See those four balls on the floor? Gold ones and blue ones. Walk down to the two buttons.",
+      {who:'nova', say:"Right then. See those four balls on the floor? Gold ones and blue ones. Walk down to the two buttons.",
        when:()=>playerNear(-2.2,9.5,4.5)},
-      {say:"That wall of light can do exactly ONE thing: split the room into two sides. Press E on ROTATE and watch what happens.",
+      {who:'bit', say:"That wall of light? That's one of MY brain cells. A neuron. And I'll be honest with you — it can do exactly one thing: cut the room in two. That's it. That's the whole cell. Press E on ROTATE, see for yourself.",
        when:()=>plA.theta!==_t0A||plA.offset!==_o0A},
-      {say:"Look at the rings under the balls. Green ring means: that ball is on the correct side. Red means wrong. Your job: make all four green.",
+      {who:'nova', say:"Now look at the rings under the balls. Green ring means: this ball is on the correct side. Red means wrong. Your job — all four green.",
        when:()=>okCountA()>=3},
-      {say:"Three green! One stubborn ball left. Keep adjusting — ROTATE turns the wall, SLIDE moves it sideways.",
+      {who:'bit', say:"Three green, one grumpy. Come on, nudge it. Even my one brain cell believes in you.",
        when:()=>phase==='B'},
-      {say:"Solved — one straight cut was enough. That wall is a NEURON: one brain cell of an AI, and one cut is ALL it can do. Now go north. Same tool, new balls. Try it.",
+      {who:'nova', say:"Lovely! One straight cut was enough. Now — through the door. Same wall, new balls. Give it a try.",
        when:()=>G.player.pos.z<-22 && (plB1.theta!==0||plB1.offset!==0)},
-      {say:"Keep trying. Really. Rotate it all the way around if you want.",
+      {who:'bit', say:"Keep spinning it. Really, take your time. I've got literally forever.",
        when:()=>plB2!==null},
-      {say:"Right — it is IMPOSSIBLE. Gold sits on opposite corners; no single straight cut can ever separate them. In 1969 this exact discovery nearly killed AI research. But you found the fix: a SECOND wall. Now a ball counts as gold-side only if it is on the bright side of BOTH walls. Two cuts together can bend. Solve it."},
+      {who:'nova', say:"There it is — with TWO walls, a ball only counts as gold when it's on the bright side of BOTH. Two simple cuts, combined, make a shape one cut never could. That's what a hidden layer is. Now finish it."},
     ]);
     return {};
   }
