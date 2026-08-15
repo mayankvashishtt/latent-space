@@ -32,6 +32,11 @@
       font-size:16.5px;line-height:1.55;color:#eaf6ff;background:linear-gradient(180deg,#0a1424ee,#0a1020ee);
       border:1px solid #234a6e;border-bottom:2px solid var(--cy);padding:13px 26px;border-radius:6px;
       opacity:0;transition:opacity .35s;box-shadow:0 0 30px #54e0ff22;letter-spacing:.02em}
+  #wp{position:absolute;display:none;transform:translate(-50%,-50%);text-align:center;pointer-events:none;transition:opacity .3s}
+  #wp .wpd{font-size:22px;color:var(--gd);text-shadow:0 0 14px #ffd257cc;animation:wpPulse 1.6s ease-in-out infinite}
+  #wp .wpl{font-size:11px;letter-spacing:.18em;color:#ffe6a3;background:#0a1020cc;border:1px solid #4a3a16;
+      padding:3px 9px;border-radius:3px;margin-top:2px;white-space:nowrap}
+  @keyframes wpPulse{50%{transform:scale(1.25)}}
   #bars{position:absolute;left:26px;bottom:118px;display:flex;flex-direction:column;gap:10px}
   .bar{width:230px}
   .bar .lb{font-size:10px;letter-spacing:.25em;color:#8fb8d8;text-transform:uppercase;margin-bottom:4px}
@@ -140,6 +145,7 @@
   <div id="lvlname"></div>
   <div id="toast"></div>
   <div id="guide"></div>
+  <div id="wp"><div class="wpd">◆</div><div class="wpl"></div></div>
   <div id="bars"></div>
 </div>
 

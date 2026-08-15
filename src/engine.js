@@ -10,7 +10,7 @@ export const G = {
   scene:null, camera:null, renderer:null, composer:null,
   player:{ pos:new THREE.Vector3(), vel:new THREE.Vector3(), yaw:0, pitch:0, onGround:false, frozen:false, friction:1 },
   keys:{}, colliders:[], interactables:[], animated:[], tweens:[], ticks:[], timers:[],
-  groundSampler:null, held:null, levelIndex:0, levels:[], progress:0, _levelState:null,
+  groundSampler:null, held:null, levelIndex:0, levels:[], progress:0, _levelState:null, waypoint:null,
   locked:false, started:false,
 };
 
@@ -74,7 +74,7 @@ export function loadLevel(i){
     const L = G.levels[i];
     G.scene = new THREE.Scene();
     G.scene.background = new THREE.Color(0x04060e);
-    G.groundSampler = null; G.player.friction = 1; G.showMe = null;
+    G.groundSampler = null; G.player.friction = 1; G.showMe = null; G.waypoint = null;
     G.colliders.length=0; G.interactables.length=0; G.animated.length=0;
     G.ticks.length=0; G.tweens.length=0;
     document.getElementById('bars').innerHTML='';
@@ -231,8 +231,28 @@ function step(dt){
   G.camera.rotation.y=P.yaw; G.camera.rotation.x=P.pitch;
 
   updatePrompt();
+  updateWaypoint();
   if(G.held){ const c=G.camera; const v=new THREE.Vector3(0.42,-0.38,-0.9).applyQuaternion(c.quaternion);
     G.held.position.copy(c.position).add(v); G.held.rotation.y = P.yaw; }
+}
+
+const _wpV=new THREE.Vector3();
+function updateWaypoint(){
+  const el=document.getElementById('wp'); if(!el) return;
+  if(!G.waypoint || panelOpen() || G.mapOpen){ el.style.display='none'; return; }
+  const wp=G.waypoint;
+  _wpV.copy(wp.pos).project(G.camera);
+  const behind=_wpV.z>1;
+  let x=_wpV.x, y=_wpV.y;
+  if(behind){ x=-x; y=-1; }                       // behind you → pin to bottom, mirrored
+  const off = Math.abs(x)>0.92 || Math.abs(y)>0.9 || behind;
+  x=Math.max(-0.92,Math.min(0.92,x)); y=Math.max(-0.88,Math.min(0.88,y));
+  el.style.display='block';
+  el.style.left=((x*0.5+0.5)*100)+'%';
+  el.style.top =(((-y)*0.5+0.5)*100)+'%';
+  const d=Math.round(wp.pos.distanceTo(G.player.pos));
+  el.querySelector('.wpl').textContent=(off?'◄ ':'')+wp.label+' · '+d+'m'+(off?' ►':'');
+  el.style.opacity = (!off && d<14) ? '0.35' : '1';
 }
 
 // ---------------- colliders / interact ----------------

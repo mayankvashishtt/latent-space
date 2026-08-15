@@ -247,6 +247,7 @@ export default {
         bar=hudBar('compute','COMPUTE BUDGET'); bar.set(1);
         lrBar=hudBar('lr','STEP MODE — 2 · NORMAL'); lrBar.set(0.55);
         arrow.visible=true;
+        G.waypoint={pos:new THREE.Vector3(0,H(0,GOALZ)+3,GOALZ), label:'GLOBAL MINIMUM'};
         obj('ACT 3 — follow the arrow to the <b>GLOBAL MINIMUM</b> · keys <b>1/2/3</b> = step size');
       }
       if(act<3) return;
@@ -274,7 +275,7 @@ export default {
         setTimeout(()=>{ G.player.friction = mode===3?0.06:1; },1400);
         toast('MOMENTUM — carried beyond the bowl');
       }}
-      if(!doneFlag && Math.hypot(P.x-0,P.z-GOALZ)<3.6){ doneFlag=true;
+      if(!doneFlag && Math.hypot(P.x-0,P.z-GOALZ)<3.6){ doneFlag=true; G.waypoint=null;
         toast('LOSS ≈ 0.02 — converged'); setTimeout(()=>complete(),900); }
     });
 
