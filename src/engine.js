@@ -34,7 +34,9 @@ export function boot(levels){
   });
 
   // input
-  addEventListener('keydown', e=>{ G.keys[e.code]=true; if(e.code==='KeyE') tryInteract(); if(e.code==='KeyV') voiceToggle(); if(e.code==='KeyM'&&G.started&&G.openMap) G.openMap(); if(e.code==='KeyH'&&G.started&&!panelOpen()&&G.showMe) G.showMe(); });
+  const wakeAudio=()=>{ try{ if(AC && AC.state!=='running') AC.resume(); }catch(e){} };
+  addEventListener('pointerdown', wakeAudio);
+  addEventListener('keydown', e=>{ wakeAudio(); G.keys[e.code]=true; if(e.code==='KeyE') tryInteract(); if(e.code==='KeyV') voiceToggle(); if(e.code==='KeyM'&&G.started&&G.openMap) G.openMap(); if(e.code==='KeyH'&&G.started&&!panelOpen()&&G.showMe) G.showMe(); });
   addEventListener('keyup',   e=>{ G.keys[e.code]=false; });
   document.addEventListener('mousemove', e=>{
     if(!G.locked || G.player.frozen) return;
