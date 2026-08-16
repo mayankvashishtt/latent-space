@@ -3,7 +3,7 @@
 //   Act 2: the cut that cannot exist (XOR, 1969, hidden layers)
 //   Act 3: the floor opens — descend the loss landscape to learn the weights for real
 import * as THREE from 'three';
-import { G, spawn, obj, toast, complete, chime, buzz, blip, onTick, hudBar, guide, playerNear } from '../engine.js';
+import { G, spawn, obj, toast, complete, chime, buzz, blip, onTick, hudBar, guide, playerNear, insight, after } from '../engine.js';
 import * as W from '../world.js';
 import { TEXT } from '../text.js';
 
@@ -160,7 +160,25 @@ export default {
       onOpen:()=>{ if(plB2) return;
         plB2=makePlane(W.C.gold, 0,-28); plB2.apply();
         planeConsoles(plB2, 2.0, -19, 'β');
-        toast('HIDDEN LAYER GRANTED — two planes, combined'); }});
+        toast('HIDDEN LAYER GRANTED — two planes, combined');
+        after(0.8,()=>insight('Why one line can NEVER solve this room', `
+          <p>The pattern in this room is called <b>XOR</b>, and you meet it in real life constantly:
+          a staircase light with a switch at the top AND bottom — flipping <em>either one</em> changes
+          the light. "One or the other, but not both." That's XOR.</p>
+          <p>Look at the floor glow: whatever you do, your line's gold zone is always <b>one half of
+          the room</b>. But the gold balls are on OPPOSITE corners. No half of a room can contain both
+          corners without also swallowing a blue ball. That's not "hard" — it's <b>impossible</b>, and
+          in 1969 two mathematicians proved it. People concluded neural networks were a dead end, and
+          AI research froze for a decade over THIS EXACT PUZZLE.</p>
+          <p>The way out was never a better line. It was <b>two lines plus a rule for combining them</b>:
+          a ball counts as gold only if it's on the bright side of BOTH. Two overlapping half-rooms
+          make a <b>strip</b> — a shape one line can't make.</p>
+          <p><b>Why this matters more than anything else in this game:</b> that combining step is
+          called a <em>hidden layer</em>. "Deep learning" means MANY layers of exactly this trick —
+          lines combining into strips, strips into curves, curves into "this is a cat". ChatGPT is
+          roughly a hundred layers of it. You're about to build layer one with your hands. The winning
+          shape here is a diagonal corridor: both walls parallel, facing opposite ways, golds inside.</p>`));
+      }});
     const doorB=W.door({x:0,z:-41,y:Y,axis:'x',color:W.C.gold});
     // exit ledge over the void
     W.ground(10,7,{y:Y,cz:-44.5});
@@ -253,9 +271,34 @@ export default {
           if(stableT>1.2){
             stableT=0;
             if(phase==='A'){ phase='B'; doorA.open(); chime();
-              obj('ACT 2 — same wall, new balls. <b>Try it.</b>'); }
+              obj('ACT 2 — same wall, new balls. <b>Try it.</b>');
+              after(1.2,()=>insight('You just did what a neuron does', `
+                <p>Look at what happened: you turned two knobs until the line separated gold from blue.
+                <b>That IS a neuron working.</b> When people say "the network adjusted its weights" —
+                they mean exactly what you just did with ROTATE and SLIDE, nothing fancier.</p>
+                <p>Notice something important: the line didn't need to be perfect from the start. You
+                nudged it, checked the rings, nudged again. <b>Adjust, check, adjust — that little loop
+                is the seed of all machine learning.</b> Hold onto it; in Act 3 you'll do it blind.</p>
+                <p>One more thing before you walk through that door: this room was EASY on purpose.
+                The gold ball sat in a corner, so one straight line could reach it. The next room looks
+                almost identical... but one tiny change will make it <b>impossible</b>. Not hard —
+                mathematically impossible. Go find out why.</p>`));
+            }
             else if(plB2){ act=2.5; doorB.open(); chime();
-              obj('ACT 3 — walk to the ledge and <b>step off</b> into the valley'); }
+              obj('ACT 3 — walk to the ledge and <b>step off</b> into the valley');
+              after(1.2,()=>insight('The impossible, solved — and the question it leaves', `
+                <p>Look at the floor: a glowing <b>corridor</b>, holding both gold balls, dodging both
+                blues. One line couldn't make that shape. Two lines combined did — and that is the
+                whole secret of "deep" learning: <b>depth = simple cuts stacked into clever shapes.</b></p>
+                <p>But notice what YOU had to do: turn four knobs (two per wall) with your own hands
+                until it worked. Now do some scary math with me. You had <b>4 knobs</b>. ChatGPT has
+                about <b>a TRILLION</b>. Nobody — no team, no company, no lifetime — can turn a
+                trillion knobs by hand.</p>
+                <p>So the real question of AI was never "can cuts be smart?" You just proved they can.
+                The real question is: <b>who turns the knobs?</b></p>
+                <p>The answer is behind the gold door. It's an algorithm — a dumb, beautiful, blind
+                little procedure — and you're about to BE it. Walk to the ledge and step off.</p>`));
+            }
           }
         } else stableT=0;
       }
@@ -268,6 +311,23 @@ export default {
         arrow.visible=true;
         G.waypoint={pos:new THREE.Vector3(0,H(0,GOALZ)+3,GOALZ), label:'GLOBAL MINIMUM'};
         obj('ACT 3 — follow the arrow to the <b>GLOBAL MINIMUM</b> · keys <b>1/2/3</b> = step size');
+        after(1.0,()=>insight('Where you are: inside the training of an AI', `
+          <p>This valley answers "who turns the trillion knobs?" — and the answer needs one picture:</p>
+          <p><b>Imagine a map where every spot on the ground = one possible setting of ALL the knobs
+          at once.</b> Walk one step, and you've changed the settings slightly. And the HEIGHT of the
+          ground at each spot = how WRONG the AI is with those settings. Mountains = the AI talks
+          nonsense. The deepest valley = the best settings that exist. That gold beam marks it.</p>
+          <p><b>Why the fog?</b> Because there are more possible knob-settings than atoms in the
+          universe. Nobody can see the whole map or check every spot. Ever. The fog is not decoration
+          — it is the truth of the situation.</p>
+          <p><b>So what CAN you know?</b> Exactly one thing: the slope under your own feet. Which way
+          is downhill from RIGHT HERE. That's the green arrow. Its real name is <b>the gradient</b>.</p>
+          <p>And the entire method that trained every AI on earth is: <em>look at the arrow, take one
+          small step downhill, look again. Repeat a few billion times.</em> That's called
+          <b>gradient descent</b>, and it is genuinely all there is. Your energy bar is the real
+          compute bill. Your 1/2/3 keys are the "learning rate" — try 3 and feel WHY too-big steps
+          make real training explode. Red crystals are fake bottoms real training gets stuck in.
+          Pink pads are the momentum that shakes it loose. Go — walk like an algorithm.</p>`));
       }
       if(act<3) return;
       // ----- descent mechanics -----
@@ -306,6 +366,18 @@ export default {
        say:"Welcome to the Learning Machine. See the gold and blue balls, and the wall of light between them? Walk down to the two buttons.",
        when:()=>playerNear(-1.8,7,4.5)},
       {who:'bit', task:'Press E on ROTATE — watch the wall and the rings',
+       do:()=>insight('Why are we splitting balls with a wall?', `
+         <p>Because <b>every decision an AI makes is a split.</b> Spam or not spam. Approve the loan
+         or reject it. Cat photo or dog photo. Whatever the question, the AI's job is to draw a line
+         between two groups.</p>
+         <p>And here is the surprise: <b>one brain cell of an AI — a "neuron" — IS a line.</b> Nothing
+         more. It looks at the data and says: everything on this side, YES. Everything on that side, NO.</p>
+         <p>The wall in front of you is that line, made touchable. The balls are the data — imagine
+         gold = spam emails, blue = normal emails. Your two buttons are the neuron's only two knobs:
+         <b>ROTATE</b> is called the <em>weights</em> (which direction the line faces) and
+         <b>SLIDE</b> is called the <em>bias</em> (where it sits).</p>
+         <p>For about 30 years, real systems — spam filters, credit scoring — worked EXACTLY like
+         this. One line. So first, feel what one line can do. Then we'll break it.</p>`),
        say:"That wall is one of MY brain cells — a neuron. It does exactly one thing: cuts the room in two. Gold side, blue side. Press E on ROTATE and watch the rings under the balls.",
        when:()=>plA.theta!==_t0||plA.offset!==_o0},
       {who:'nova', task:'Make all 4 rings GREEN — rotate & slide the wall',

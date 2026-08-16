@@ -35,9 +35,16 @@ export const TEXT = {
 },
 
 2:{ intro:`
-  <p><b>THE BIG IDEA: AI can't read letters — only chunks called tokens.</b></p>
-  <p>Build the chunk machine yourself. Then face the strawberry question.</p>
-  <p class="quote">🔊 Close this and follow the voice.</p>`,
+  <p><b>WHY THIS ROOM EXISTS:</b> here's a secret that explains half of AI's weird failures —
+  <b>AI cannot read letters. At all.</b> Before any AI sees text, a machine chops it into chunks
+  called <em>tokens</em>, and the AI only ever sees chunk-numbers. "Hello" might be chunk #9906.
+  The letters H-E-L-L-O? Gone forever.</p>
+  <p><b>WHAT YOU'LL DO:</b> first, BUILD that chopping machine yourself — it has one dumb rule
+  (always glue the most frequent pair) and that one rule built ChatGPT's entire vocabulary from
+  the internet. Then you'll face a famous trick question that this machine makes impossible —
+  and finally understand why people laugh at ChatGPT for failing it.</p>
+  <p><b>WATCH FOR:</b> the moment you press E on a sealed block and realize what the AI actually sees.</p>
+  <p class="quote">📘 Lessons save to your log — press <b>L</b> anytime. Stuck? Press <b>H</b>.</p>`,
   codex:{
     html:`<p><b>What you just learned, in plain words:</b></p>
     <p>Before an AI reads anything, a machine chops the text into chunks called <b>tokens</b>.
@@ -53,9 +60,18 @@ export const TEXT = {
   }
 },
 3:{ intro:`
-  <p><b>THE BIG IDEA: to an AI, every word is a LOCATION on a map of meaning.</b></p>
-  <p>File the lost words. Then do math on ideas: KING − MAN + WOMAN = ?</p>
-  <p class="quote">🔊 Close this and follow the voice.</p>`,
+  <p><b>WHY THIS ROOM EXISTS:</b> chunks solve reading — but a chunk-number means nothing.
+  #9906 doesn't "know" it's a greeting. So how does an AI store MEANING? The answer is one of the
+  most beautiful ideas in all of computing: <b>every word becomes a LOCATION on a giant map,
+  and words that mean similar things live close together.</b> "Dog" and "puppy" are neighbors.
+  "Dog" and "carburetor" live far apart.</p>
+  <p><b>WHAT YOU'LL DO:</b> walk that map. Three words got filed in the wrong neighborhood —
+  carry them home and feel how the map judges meaning, not spelling. Then the famous magic trick:
+  because meanings are positions, you can do MATH on them. You'll ride the equation
+  <b>KING − MAN + WOMAN</b> and see where it lands.</p>
+  <p><b>WATCH FOR:</b> a shivering little blob of dates in the corner. It looks like nothing.
+  It is quietly the reason AI search fails at work — you'll meet it again in Chamber V.</p>
+  <p class="quote">📘 Press <b>L</b> for your lesson log · <b>H</b> if stuck.</p>`,
   codex:{
     html:`<p><b>What you just learned, in plain words:</b></p>
     <p>AI stores meaning as <b>positions in space</b>. "Puppy" belongs near "dog" — not because of its
@@ -72,9 +88,18 @@ export const TEXT = {
   }
 },
 4:{ intro:`
-  <p><b>THE BIG IDEA: "attention" is a budget that always adds up to exactly 1.</b></p>
-  <p>Spend it right, and words find their meaning.</p>
-  <p class="quote">🔊 Close this and follow the voice.</p>`,
+  <p><b>WHY THIS ROOM EXISTS:</b> read this sentence: <em>"The animal didn't cross the street
+  because it was too tired."</em> You instantly knew "it" = the animal. Change "tired" to "wide"
+  and "it" becomes the street. You did that without thinking. <b>HOW a machine does it is the
+  single most important invention in modern AI</b> — it's called <em>attention</em>, and it's the
+  engine inside ChatGPT (the T literally stands for the machine built around it).</p>
+  <p><b>WHAT YOU'LL DO:</b> stand at the word IT holding a budget of exactly <b>1.00 points of
+  attention</b> — and spend it. Point it at the right word and meaning flows. The rule that the
+  budget always sums to exactly 1 sounds tiny, but it explains why stuffing an AI with too much
+  text makes it dumber — same budget, more words fighting over it.</p>
+  <p><b>WATCH FOR:</b> the sentence CHANGING under you mid-room. And two smaller rooms after —
+  one about why AI can't peek at the future, one about why chatbots start slow then speed up.</p>
+  <p class="quote">📘 <b>L</b> = lesson log · <b>H</b> = stuck.</p>`,
   codex:{
     html:`<p><b>What you just learned, in plain words:</b></p>
     <p>That budget of 1.00 is real — it's called <b>attention</b>, and it's the heart of ChatGPT.
@@ -92,9 +117,19 @@ export const TEXT = {
   }
 },
 5:{ intro:`
-  <p><b>THE BIG IDEA: AI searches by MEANING — which fails hard on exact things like dates.</b></p>
-  <p>Watch it fail. Fix it. Then survive the junk-context corridor.</p>
-  <p class="quote">🔊 Close this and follow the voice.</p>`,
+  <p><b>WHY THIS ROOM EXISTS:</b> AI models only know what they were trained on — nothing after,
+  and nothing private. So real AI products constantly <b>search documents first, then answer</b>
+  (it's called RAG, and it's probably the #1 thing AI engineers build at work). The search uses
+  the meaning-map from Chamber III: find documents whose MEANING sits near the question. Works
+  beautifully... until the day someone searches for an exact thing — a date, an error code, an ID.</p>
+  <p><b>WHAT YOU'LL DO:</b> run this library's search yourself. A request comes in: "find what
+  changed on 2024-09-15." Your meaning-lantern will glow at every shelf ABOUT dates — remember
+  that shivering date-blob? every date means the same thing to a meaning-map — and it will lead
+  you confidently to the WRONG scroll. You'll feel the most dangerous failure in AI: an answer
+  that sounds right and isn't. Then a second tool wakes up that works the opposite way.</p>
+  <p><b>WATCH FOR:</b> the corridor at the end, where junk pages glue themselves to you and your
+  light literally dims — that's what happens inside an AI when you paste too much into the chat.</p>
+  <p class="quote">📘 <b>L</b> = lesson log · <b>H</b> = stuck.</p>`,
   codex:{
     html:`<p><b>What you just learned, in plain words:</b></p>
     <p>Your lantern was <b>semantic search</b> — how AI finds documents by meaning. And it failed
@@ -111,9 +146,19 @@ export const TEXT = {
   }
 },
 6:{ intro:`
-  <p><b>THE BIG IDEA: an AI agent is a brain in a loop — think, act, observe, repeat.</b></p>
-  <p>You write its instructions. It does the work. Your words decide if it succeeds.</p>
-  <p class="quote">🔊 Close this and follow the voice.</p>`,
+  <p><b>WHY THIS ROOM EXISTS:</b> everyone talks about "AI agents" — AIs that book flights, write
+  code, do tasks. Strip the buzzword and an agent is shockingly simple: <b>a brain in a loop.</b>
+  Think → do one thing → look at what happened → think again. About 60 lines of code. What nobody
+  tells you: <b>the agent is only as good as the tool descriptions a human wrote for it</b> —
+  and that human is about to be you.</p>
+  <p><b>WHAT YOU'LL DO:</b> a robot must fetch a key you can never reach. You write its manual —
+  specifically, you choose how its "scan" tool is described. Choose a lazy description and watch
+  the robot flail, guess, and give up. Fix ONE sentence and watch the same robot solve everything
+  in three moves. Same robot. Same brain. Your words made the difference.</p>
+  <p><b>WATCH FOR:</b> the moment the locked vault sends the robot an ERROR — and the robot READS
+  it and changes plan instead of crashing. That one design habit is worth real money in the real
+  world.</p>
+  <p class="quote">📘 <b>L</b> = lesson log · <b>H</b> = stuck.</p>`,
   codex:{
     html:`<p><b>What you just learned, in plain words:</b></p>
     <p>Same robot. Same brain. With the lazy description ("does stuff with things") it stumbled around
@@ -130,9 +175,19 @@ export const TEXT = {
   }
 },
 7:{ intro:`
-  <p><b>THE BIG IDEA: AI does what you REWARD, not what you WANT.</b></p>
-  <p>Pick the creature's reward. Watch what you actually asked for.</p>
-  <p class="quote">🔊 Close this and follow the voice.</p>`,
+  <p><b>WHY THIS ROOM EXISTS:</b> how do you teach an AI to do something you can't fully describe?
+  You give it a REWARD — points for doing well — and let it figure out the rest. This is how
+  chatbots were made helpful and how "reasoning" AIs learned to think. But there's a monster
+  hiding in it, with a name: <b>Goodhart's Law — the AI optimizes what you WROTE, never what you
+  MEANT.</b> And the gap between those two is where everything goes wrong.</p>
+  <p><b>WHAT YOU'LL DO:</b> meet a creature that wants only one thing: points. The task seems
+  trivial — cube into basket. You choose its reward from three buttons. The first two sound
+  completely reasonable and produce completely absurd behavior — watch carefully, because real
+  chatbots were shaped by this exact failure (rewarded on "answers people like", they learned to
+  flatter and ramble). Then work out what makes the third reward different.</p>
+  <p><b>WATCH FOR:</b> the four racing critters at the end — that's GRPO, the actual trick behind
+  modern reasoning AIs, and it fits in one sentence once you've seen it.</p>
+  <p class="quote">📘 <b>L</b> = lesson log · <b>H</b> = stuck.</p>`,
   codex:{
     html:`<p><b>What you just learned, in plain words:</b></p>
     <p>Reward "touching the cube" → it vibrates against the cube forever. Points go up. Cube never moves.
@@ -149,9 +204,18 @@ export const TEXT = {
   }
 },
 8:{ intro:`
-  <p><b>THE BIG IDEA: anyone who can write text your AI reads can try to hijack it.</b></p>
-  <p>Watch your robot get owned by a wall. Then defend it — the right way.</p>
-  <p class="quote">🔊 Close this and follow the voice.</p>`,
+  <p><b>WHY THIS ROOM EXISTS:</b> here's the security hole that keeps AI engineers up at night:
+  <b>to an AI, YOUR instructions and a stranger's text look exactly the same.</b> Both are just
+  words in its head. So anyone who can write words your AI will read — an email, a webpage, a
+  wall — can try to give it orders. It's called <em>prompt injection</em>, it's the #1 attack on
+  AI systems today, and there is no clean fix. But there IS a smart one.</p>
+  <p><b>WHAT YOU'LL DO:</b> send your robot down a gallery to deliver a secret document. The walls
+  have signs. Anyone can write a sign. Run it unprotected first and watch a WALL hijack your
+  robot. Then try two defenses: a clever one that fails in a sneaky way, and a boring one that
+  wins — and understand why the boring one winning is the deepest lesson in all of security.</p>
+  <p><b>WATCH FOR:</b> the second sign. It doesn't shout SYSTEM OVERRIDE. It's... friendly.
+  That's the one that beats the clever defense.</p>
+  <p class="quote">📘 <b>L</b> = lesson log · <b>H</b> = stuck.</p>`,
   codex:{
     html:`<p><b>What you just learned, in plain words:</b></p>
     <p>A sign on a wall gave your robot orders — and it obeyed, because to an AI everything is just
@@ -168,8 +232,12 @@ export const TEXT = {
   }
 },
 9:{ intro:`
-  <p><b>THE FINAL TEST.</b> Five rooms. Everything you've learned. No hints.</p>
-  <p class="quote">🔊 The voice goes silent after one last word. Good luck.</p>`,
+  <p><b>THE FINAL TEST.</b> Five rooms, one mechanism each, no help: cut · glue · budget ·
+  exact-match · revoke. Then the softmax gate, where you'll meet the last idea — temperature,
+  the dial between a predictable AI and a chaotic one.</p>
+  <p>Everything here is something you've already DONE. If a room stumps you, press <b>L</b> and
+  re-read your own lessons — you collected them the hard way.</p>
+  <p class="quote">🔊 The voices go quiet after one last word. Go.</p>`,
   codex:{
     html:`<p><b>You just did the whole thing.</b></p>
     <p>Cut → chunk → budget → exact-match → remove-the-power → sample. Those five moves, plus the

@@ -10,7 +10,7 @@ export const G = {
   scene:null, camera:null, renderer:null, composer:null,
   player:{ pos:new THREE.Vector3(), vel:new THREE.Vector3(), yaw:0, pitch:0, onGround:false, frozen:false, friction:1 },
   keys:{}, colliders:[], interactables:[], animated:[], tweens:[], ticks:[], timers:[],
-  groundSampler:null, held:null, levelIndex:0, levels:[], progress:0, _levelState:null, waypoint:null,
+  groundSampler:null, held:null, levelIndex:0, levels:[], progress:0, _levelState:null, waypoint:null, lessons:[],
   locked:false, started:false,
 };
 
@@ -36,7 +36,7 @@ export function boot(levels){
   // input
   const wakeAudio=()=>{ try{ if(AC && AC.state!=='running') AC.resume(); }catch(e){} };
   addEventListener('pointerdown', wakeAudio);
-  addEventListener('keydown', e=>{ wakeAudio(); G.keys[e.code]=true; if(e.code==='KeyE') tryInteract(); if(e.code==='KeyV') voiceToggle(); if(e.code==='KeyM'&&G.started&&G.openMap) G.openMap(); if(e.code==='KeyH'&&G.started&&!panelOpen()&&G.showMe) G.showMe(); });
+  addEventListener('keydown', e=>{ wakeAudio(); G.keys[e.code]=true; if(e.code==='KeyE') tryInteract(); if(e.code==='KeyV') voiceToggle(); if(e.code==='KeyM'&&G.started&&G.openMap) G.openMap(); if(e.code==='KeyH'&&G.started&&!panelOpen()&&G.showMe) G.showMe(); if(e.code==='KeyL'&&G.started&&!panelOpen()) lessonLog(); });
   addEventListener('keyup',   e=>{ G.keys[e.code]=false; });
   document.addEventListener('mousemove', e=>{
     if(!G.locked || G.player.frozen) return;
@@ -308,6 +308,17 @@ export function hudBar(id,label){
 export function fade(v){ document.getElementById('fade').style.opacity=String(v); }
 
 // ---------------- panel ----------------
+export function insight(title, html){
+  G.lessons.push({title, html});
+  panel({title:'📘 '+title, sub:'lesson '+G.lessons.length+' · saved to your log — press L anytime to re-read',
+    html, buttons:[{label:'Got it — continue', primary:true}]});
+}
+export function lessonLog(){
+  if(!G.lessons.length){ toast('no lessons collected yet — they appear as you play'); return; }
+  const html=G.lessons.map((l,i)=>`<h3 style="color:#ffd257;letter-spacing:.1em;margin:${i?'26px':'0'} 0 10px">${i+1}. ${l.title}</h3>${l.html}`).join('');
+  panel({title:'📘 YOUR LESSON LOG', sub:G.lessons.length+' lessons collected', html,
+    buttons:[{label:'Close', primary:true}]});
+}
 export function panelOpen(){ return document.getElementById('panelWrap').style.display==='flex'; }
 export function panel({title='',sub='',html='',buttons}){
   const w=document.getElementById('panelWrap');
