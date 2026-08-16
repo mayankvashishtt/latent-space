@@ -1,6 +1,6 @@
 // III · THE TOKENIZER — run BPE by hand, then hit the strawberry wall.
 import * as THREE from 'three';
-import { G, spawn, obj, toast, complete, chime, buzz, onTick, hold, dropHeld, guide, playerNear } from '../engine.js';
+import { G, spawn, obj, toast, complete, chime, buzz, onTick, hold, dropHeld, guide, playerNear, insight, after } from '../engine.js';
 import * as W from '../world.js';
 import { TEXT } from '../text.js';
 
@@ -66,6 +66,18 @@ export default {
           else { out.push(seq[k]); k++; }
         }
         seq=out; merges++;
+        if(merges===1) after(1.0,()=>insight('You just built a token', `
+          <p>That glued pair is now <b>one token</b> — one "word" in the machine's private language.
+          And the rule you followed is the ENTIRE algorithm: <em>count every neighboring pair,
+          glue the most frequent one, repeat.</em> It's called Byte-Pair Encoding, and this exact
+          rule, run millions of times over the whole internet, built ChatGPT's vocabulary.</p>
+          <p><b>Why chunks at all?</b> A computer needs a fixed list of parts. Whole words? English
+          alone has 170,000+ — too many, and new slang breaks it. Single letters? Then "understanding"
+          takes 13 painful steps to read. Chunks are the perfect middle: common words become ONE chunk,
+          rare words split into familiar pieces, and NOTHING is ever unreadable.</p>
+          <p><b>The strange part:</b> nobody chooses the chunks. Counting does. That's why real AI
+          tokens look weird — "artificial" splits into "art·ificial", which makes no sense to a human.
+          Frequency doesn't care about meaning. Keep gluing — two more.</p>`));
         toast(`MERGED "${pair}" ×${c[pair]} — new token added to vocabulary`);
         scoreLbl.material.map.dispose();
         const nl=W.text(`MERGES ${merges} / 3`,{size:.45,color:'#9fd8ff'}); scoreLbl.material=nl.material; scoreLbl.scale.copy(nl.scale);
@@ -82,7 +94,7 @@ export default {
     const doorA=W.door({x:0,z:-17,axis:'x'});
     obj('ROOM A — <b>merge the most frequent adjacent pair</b> · 3 merges to build the vocabulary');
 
-    let triedMono=false, opened=0;
+    let triedMono=false, opened=0, insSealed=false;
     // ---------------- ROOM B: STRAWBERRY ----------------
     // three opaque token monoliths
     const toks=[['STR',9821],['AW',675],['BERRY',19772]];
@@ -95,7 +107,20 @@ export default {
       W.label(new THREE.Vector3(x,4.9,-38),`token #${id}`,{size:.34,color:'#5f86ab'});
       mono.userData.tok=t; mono.userData.x=x; mono.userData.opened=false;
       mono.userData.interact={prompt:'detokenize (requires ray)', fn:()=>{
-        if(!hasRay){ triedMono=true; buzz(); toast('The surface is sealed. Token IDs have no letters inside — <b>find the DETOKENIZER RAY</b>.'); return; }
+        if(!hasRay){ triedMono=true;
+          if(!insSealed){ insSealed=true; after(1.2,()=>insight('What the AI actually sees', `
+            <p>Sealed, right? <b>This is the AI's entire experience of the word STRAWBERRY:</b>
+            three chunk-numbers. #STR, #AW, #BERRY. The letters S-T-R-A-W... don't exist for it.
+            They were thrown away by the chopping machine you just built, before the AI ever
+            saw anything.</p>
+            <p>Now you understand the internet's favorite gotcha: "ChatGPT can't count the R's in
+            strawberry, lol." It's not stupidity. <b>It's blindness.</b> Asking it to count letters
+            inside a chunk is like asking you to count the brushstrokes in a photo of a painting —
+            the information simply isn't in what you were given.</p>
+            <p>This gives you a rule worth remembering forever: <b>if it's not visible in the tokens,
+            the AI cannot know it.</b> Before calling an AI dumb, ask: could it even SEE what I asked
+            about? You, however, get a cheat — find the green ray.</p>`)); }
+          buzz(); toast('The surface is sealed. Token IDs have no letters inside — <b>find the DETOKENIZER RAY</b>.'); return; }
         if(mono.userData.opened) return; mono.userData.opened=true; opened++;
         mono.material.opacity=.12; mono.material.transparent=true; mono.material.emissiveIntensity=.15;
         t.split('').forEach((ch,k)=>{

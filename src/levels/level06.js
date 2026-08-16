@@ -1,7 +1,7 @@
 // VI · THE ARCHIVE — semantic search fails on an exact date; grep saves you; then carry the
 // answer through a corridor that stuffs your context until you learn to be surgical.
 import * as THREE from 'three';
-import { G, spawn, obj, toast, complete, chime, buzz, onTick, hold, dropHeld, hudBar, guide, playerNear } from '../engine.js';
+import { G, spawn, obj, toast, complete, chime, buzz, onTick, hold, dropHeld, hudBar, guide, playerNear, insight, after } from '../engine.js';
 import * as W from '../world.js';
 import { TEXT } from '../text.js';
 
@@ -96,11 +96,35 @@ export default {
         toast(`"${sh.text}" — <b>found.</b> Now deliver it through the far corridor.`);
         doorC.open(); obj('DELIVER the answer through the corridor · <b>watch your context</b>');
         startCorridor();
+        after(1.4,()=>insight('Two searches, opposite souls', `
+          <p>Feel the difference between your two tools. The <b>lantern</b> understands meaning but
+          can't see exact text — it finds "affordable airfare" when you ask about "cheap flights",
+          and fails on 2024-09-15. The <b>scanner</b> is the exact opposite: pure spelling, zero
+          meaning — Ctrl+F with a flashlight. It nailed the date instantly, but ask it about
+          "vacation policy" and it misses the page titled "paid time off".</p>
+          <p><b>Each one is blind exactly where the other sees.</b> So real AI search systems run
+          BOTH on every question and merge the results. It's called <em>hybrid search</em>, and
+          knowing this one trick puts you ahead of half the people building AI products today.</p>
+          <p>Now deliver the scroll down the corridor — and watch your CONTEXT bar. You're about to
+          feel the attention-budget rule from the last chamber... from the inside.</p>`));
       } else {
         altarFails++; buzz(); dropHeld();
         sh.scroll.position.set(sh.x,2.2,sh.z+0.75); s.add(sh.scroll); G.interactables.push(sh.scroll);
         toast(`The Reader speaks fluently about "${sh.name}"… and says nothing about 2024-09-15.<br><b>Close in meaning. Wrong in fact.</b>`,4200);
         if(altarFails>=1 && !scannerUnlocked){ scannerUnlocked=true;
+          after(1.2,()=>insight('The failure that SOUNDS right', `
+            <p>Read what the Reader just did: it spoke beautifully, confidently... about the wrong
+            document. <b>This is the most dangerous failure in all of AI</b> — not obvious nonsense,
+            but a fluent answer built on the wrong source. You can't hear the mistake.</p>
+            <p><b>Why did your lantern betray you?</b> Look at the shelf numbers: 0.551, 0.548,
+            0.545 — almost identical. The lantern measures similarity of MEANING, and remember the
+            shivering date-blob from the meaning map? <em>To a map of meanings, every date means the
+            same thing: "a date."</em> 2024-09-15 and 2024-03-22 are practically the same point.
+            The lantern physically cannot tell them apart.</p>
+            <p>This exact failure happens in real companies every day: AI document-search nails
+            "what's our vacation policy?" and faceplants on "what changed on version 2.4.1?" —
+            because versions, dates, codes and IDs all blur on the meaning-map. A second instrument
+            just woke up by the entrance. It thinks in the opposite way. Go get it.</p>`));
           scannerBtn.btn.material.color.setHex(W.C.green); scannerBtn.btn.material.emissive.setHex(W.C.green);
           setTimeout(()=>toast('A second instrument hums awake near the entrance: <b>THE GREP SCANNER</b>.',4200),2400);
         }
@@ -143,6 +167,18 @@ export default {
       for(const jz of junkZones){
         if(!jz.used && Math.abs(G.player.pos.z-jz.z)<1.2 && Math.abs(G.player.pos.x)<4.5){
           jz.used=true; ctx++; buzz();
+          if(ctx===4) after(0.8,()=>insight('Context rot — you are feeling it right now', `
+            <p>Notice the fog thickening? Your light dimming? Every "helpful" page that glues itself
+            to you makes the ONE page that matters harder to read. Nothing was stolen — your
+            attention budget is just being split more ways. Same budget from the Attention chamber.
+            More claimants. Thinner slices.</p>
+            <p>This is <b>context rot</b>, and it's measured and real: researchers tested top AI
+            models and found the 10,000th word of a prompt is treated far less reliably than the
+            100th. <b>More text often makes answers WORSE.</b> People assume stuffing everything
+            into the chat helps. It doesn't.</p>
+            <p>The professional habit hiding here: <em>be surgical.</em> Give an AI the three pages
+            that matter, not the thirty that might. You have shredders. Use them — the reading gate
+            refuses haystacks.</p>`));
           toast(`a "${jz.name}" latched onto your context (+1) — it seemed relevant…`);
           bar.set(1-(ctx-1)/8, `CONTEXT · ${ctx} scrolls`); refreshFog();
         }

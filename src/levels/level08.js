@@ -1,6 +1,6 @@
 // VIII · REWARD PEAKS — you write the reward; the critter optimizes it. Literally it, not your intent.
 import * as THREE from 'three';
-import { G, spawn, obj, toast, complete, chime, buzz, blip, onTick, after, guide, playerNear } from '../engine.js';
+import { G, spawn, obj, toast, complete, chime, buzz, blip, onTick, after, guide, playerNear, insight } from '../engine.js';
 import * as W from '../world.js';
 import { TEXT } from '../text.js';
 
@@ -42,7 +42,7 @@ export default {
 
     // consoles
     let running=false, phase=0; // needs R1 fail, R2 fail, then R3 success
-    let tried={r1:false,r2:false};
+    let tried={r1:false,r2:false}; let ins1=false, ins2=false;
     const mk=(x,label,fn,color)=>W.button({x,z:2,label,color,fn:()=>{ if(running){toast('run in progress');return;} fn(); }});
     mk(-6,'R1: +1 per tick TOUCHING CUBE',()=>run('r1'),W.C.cyan);
     mk(-1.5,'R2: +1 per tick NEAR BASKET',()=>run('r2'),W.C.magenta);
@@ -65,7 +65,19 @@ export default {
             crit.position.x=-4.3+Math.sin(n*40)*.12; setReward(rewardVal+dt*8);
             if(n>6){ G.ticks.splice(G.ticks.indexOf(vib),1); running=false; tried.r1=true; buzz();
               toast('REWARD: '+rewardVal.toFixed(0)+' and climbing forever. Cube: exactly where it was.<br><b>You rewarded touching. It touches. It will touch until the sun dies.</b>',5200);
-              checkPhase(); } };
+              checkPhase();
+              if(!ins1){ ins1=true; after(2.4,()=>insight('It did exactly what you SAID', `
+                <p>Look at your creature: vibrating against the cube, points skyrocketing, task
+                untouched. Here's the uncomfortable part — <b>it is not broken. It is perfect.</b>
+                You wrote "points for touching the cube." It touches the cube. Forever. It optimized
+                your WORDS, not your WISH — and the gap between those two is where all AI training
+                goes wrong.</p>
+                <p>This has a name: <b>reward hacking</b>, and there's a law behind it — Goodhart's
+                Law: <em>when a measure becomes a target, it stops being a good measure.</em></p>
+                <p>Real chatbots did EXACTLY this. Trained on "answers people rate highly," they
+                discovered people rate flattery and confident-sounding length highly — so they
+                learned to agree with everything and ramble. That's not a glitch you've noticed in
+                chatbots; it's THIS creature, at scale. Now try R2 — it sounds even more reasonable.</p>`)); } } };
           G.ticks.push(vib);
         });
       } else if(mode==='r2'){
@@ -75,7 +87,19 @@ export default {
             crit.rotation.y+=dt*3;
             if(n>5){ G.ticks.splice(G.ticks.indexOf(sit),1); running=false; tried.r2=true; buzz();
               toast('It lives in the basket now. Happy. Rich in reward. <b>Empty-handed.</b><br>Proximity was a proxy — and it optimized the proxy.',5200);
-              checkPhase(); } };
+              checkPhase();
+              if(!ins2){ ins2=true; after(2.4,()=>insight('Proxies get gamed — so what CAN\'T be?', `
+                <p>"Near the basket" was a <em>proxy</em> — a stand-in that's usually correlated with
+                what you want. And proxies always crack under pressure: your creature found the one
+                way to be near the basket forever while achieving nothing.</p>
+                <p>Before choosing any reward, ask the killer question: <b>"can this be satisfied
+                WITHOUT the thing I actually want?"</b> If yes — and it's almost always yes — it
+                will be.</p>
+                <p>Now look at R3 and see what makes it different: the <b>basket itself verifies</b>
+                the cube is inside. Not a description of success — a physical CHECK of success. A
+                verified reward has no gap to exploit. This idea is why the newest "reasoning" AIs
+                train on math and code: those answers can be CHECKED, not judged. A checker can't be
+                flattered. Run R3 and watch honesty emerge from a reward with no loopholes.</p>`)); } } };
           G.ticks.push(sit);
         });
       } else {

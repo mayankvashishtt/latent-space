@@ -1,6 +1,6 @@
 // X · OUTPUT HEAD — a speedrun remix of everything, ending at the softmax gate.
 import * as THREE from 'three';
-import { G, spawn, obj, toast, complete, chime, buzz, blip, onTick, after, panel, loadLevel, guide } from '../engine.js';
+import { G, spawn, obj, toast, complete, chime, buzz, blip, onTick, after, panel, loadLevel, guide, insight } from '../engine.js';
 import * as W from '../world.js';
 import { TEXT } from '../text.js';
 
@@ -95,7 +95,7 @@ export default {
     // ---------- SOFTMAX GATE (z≈-80) ----------
     {
       const logits=[2.1,0.3,1.1,-0.5,0.8];
-      let T=1.0, emitted=false;
+      let T=1.0, emitted=false, insTemp=false;
       const bars=[], doorsF=[];
       const probs=()=>{ const ex=logits.map(l=>Math.exp(l/T)); const su=ex.reduce((a,b)=>a+b,0); return ex.map(e=>e/su); };
       for(let i=0;i<5;i++){
@@ -115,6 +115,17 @@ export default {
       W.button({x:4,z:-78,label:'T = 10',color:W.C.red,fn:()=>{ T=10; showP(); const nl=W.text('TEMPERATURE 10 — chaos',{size:.4,color:'#ff5c6a'}); tl.material=nl.material; tl.scale.copy(nl.scale); }});
       W.button({x:0,z:-75,label:'SAMPLE THE NEXT TOKEN',color:W.C.gold,fn:()=>{
         if(emitted) return;
+        if(!insTemp){ insTemp=true; after(0.4,()=>insight('Temperature — the last dial', `
+          <p>One final idea, and it's one you've met in every chatbot's settings: <b>temperature.</b></p>
+          <p>An AI never "picks a word." It assigns a <b>probability to every word it knows</b> —
+          look at the doors: those p-numbers are real. Then one gets drawn, like a weighted lottery.
+          Temperature reshapes the lottery: <b>LOW temperature</b> sharpens it — the top choice
+          becomes near-certain (predictable, repeatable — what you want for facts and code).
+          <b>HIGH temperature</b> flattens it — unlikely words get real chances (creative,
+          surprising — nice for poetry, disastrous for math).</p>
+          <p>Play with the T buttons and literally watch the probabilities move. Then sharpen the
+          distribution and sample — at high temperature, anything can happen. Including the wrong
+          door.</p>`)); return; }
         const p=probs(); const r=Math.random(); let acc=0, pick=0;
         for(let i=0;i<5;i++){ acc+=p[i]; if(r<=acc){ pick=i; break; } }
         const best=p.indexOf(Math.max(...p));

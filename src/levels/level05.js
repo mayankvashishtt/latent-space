@@ -1,7 +1,7 @@
 // V · ATTENTION — distribute a budget that sums to 1; the sentence changes under you.
 // Then the causal glass, then the KV cache choice.
 import * as THREE from 'three';
-import { G, spawn, obj, toast, complete, chime, buzz, onTick, after, guide, playerNear } from '../engine.js';
+import { G, spawn, obj, toast, complete, chime, buzz, onTick, after, guide, playerNear, insight } from '../engine.js';
 import * as W from '../world.js';
 import { TEXT } from '../text.js';
 
@@ -31,7 +31,7 @@ export default {
     });
     // candidates
     const cands=[{wd:'animal',x:-12},{wd:'street',x:0}];
-    let alloc={animal:0,street:0}, pool=1.0, phase=1;
+    let alloc={animal:0,street:0}, pool=1.0, phase=1, insBudget=false;
     const beams={};
     function beamTo(x, frac){
       // beam from IT pillar to candidate, thickness by weight
@@ -54,6 +54,17 @@ export default {
       W.button({x:c.x-1, z:-1.5, label:`+0.25 → ${c.wd.toUpperCase()}`, color:W.C.cyan, fn:()=>{
         if(pool<0.24){ buzz(); toast('POOL EMPTY — your attention budget always adds up to exactly 1.<br>Press RESET to try a different split.'); return; }
         pool-=0.25; alloc[c.wd]+=0.25; poolText(); beamTo(c.x==-12?-12:0, alloc[c.wd]);
+        if(!insBudget){ insBudget=true; after(0.8,()=>insight('The budget that always sums to 1', `
+          <p>You just spent a quarter of your attention — and here's the rule that makes this the
+          most important room in the game: <b>the budget ALWAYS adds up to exactly 1.</b> Not 1.1.
+          Not 0.9. Giving more to one word means <em>taking it from every other word.</em></p>
+          <p>Inside ChatGPT, EVERY word does what you're doing right now: it spends a budget of 1.0
+          across all the other words, deciding who matters to its meaning. That mechanism is called
+          <b>attention</b>, and the T in GPT stands for the machine built around it.</p>
+          <p><b>And here's the everyday consequence:</b> ever noticed AI gets dumber when you paste
+          a huge document into the chat? Same budget, thousands more words fighting over it — every
+          word's slice gets thinner. You'll FEEL that in Chamber V. For now: spend the whole pool on
+          the word IT truly points to, then CONFIRM.</p>`)); }
         toast(`attention(${c.wd}) = ${alloc[c.wd].toFixed(2)}`);
       }});
     });
@@ -75,6 +86,19 @@ export default {
             toast('<b>THE SENTENCE CHANGED.</b> "...because IT was too WIDE."<br>Same structure. New meaning. Redistribute.',4200);
             phase=2; pool=1; alloc={animal:0,street:0}; poolText(); beamTo(-12,0); beamTo(0,0);
             obj('PHASE 2 — "wide": route the attention again · then CONFIRM');
+            after(2.4,()=>insight('One word changed — the whole meaning moved', `
+              <p>Look at what just happened. Nobody touched the word IT. Nobody touched the sentence
+              shape. One faraway word flipped from "tired" to "wide" — and IT stopped meaning the
+              animal and started meaning the street.</p>
+              <p><b>This is the superpower older AI never had:</b> a word's meaning is not looked up
+              in a dictionary — it's <em>computed fresh from its neighbors, every single time.</em>
+              "Bank" near "river" and "bank" near "money" get entirely different meanings, built
+              on the spot by attention.</p>
+              <p>Before 2017, AI read like a person with severe memory loss — by the end of a long
+              sentence it had forgotten the start. Attention fixed that in one stroke: every word
+              sees ALL words at once, at any distance. That single idea is the paper that started
+              modern AI. Its title, no joke: <em>"Attention Is All You Need."</em> Now route the
+              new meaning and confirm.</p>`));
           });
         } else {
           toast('IT → STREET. The street was wide. <b>Same word, new meaning — the surroundings decided.</b>');
@@ -122,6 +146,16 @@ export default {
       if(!choosing) return; choosing=false; chime();
       toast('CACHE HIT — old K,V reused, only your fresh Q computed. The gate opens instantly.');
       doorC.open();
+      after(1.2,()=>insight('Why chatbots start slow, then speed up', `
+        <p>You chose right — and you just understood something you've felt a hundred times without
+        knowing it.</p>
+        <p>The old words' values never change (they CAN'T — the glass wall from the last room means
+        no word is allowed to see the future, so new words never alter old ones). Recomputing them
+        is pure waste. So real AI <b>saves them</b> — it's called the KV cache.</p>
+        <p><b>The consequence you already know:</b> when a chatbot answers, the FIRST word takes a
+        moment — it's doing the math for your whole message and filling the cache. Every word after
+        streams out fast — only ONE new word needs fresh math each step. Slow first token, fast
+        stream. That's the cache you just chose. Walk through the gold gate.</p>`));
       obj('walk through the gold gate');
     }});
     onTick(()=>{

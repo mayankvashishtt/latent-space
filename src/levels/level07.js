@@ -1,7 +1,7 @@
 // VII · AGENT FOUNDRY — you can't reach the key. Build the drone's harness and watch it try.
 // Bad tool descriptions = confused drone. Errors returned as observations = recovery.
 import * as THREE from 'three';
-import { G, spawn, obj, toast, complete, chime, buzz, blip, onTick, after, guide, playerNear } from '../engine.js';
+import { G, spawn, obj, toast, complete, chime, buzz, blip, onTick, after, guide, playerNear, insight } from '../engine.js';
 import * as W from '../world.js';
 import { TEXT } from '../text.js';
 
@@ -53,9 +53,18 @@ export default {
     W.terminal({x:-7.5,z:8,yaw:-.2,label:'DESCRIPTION B',title:'scan — description B',sub:'"lists every object in the chamber with its position"',
       html:`<p><code>scan: lists every object in the chamber with its position. Use it FIRST, before acting.</code></p>
       <p>Select this description for the scan tool?</p>`,
-      onOpen:()=>{ cfg.scanDesc='precise'; toast('scan description set: <b>precise</b>'); }});
+      onOpen:()=>{ cfg.scanDesc='precise'; toast('scan description set: <b>precise</b>');
+        if(ranOnce && !insWords){ insWords=true; after(0.8,()=>insight('You changed one sentence', `
+          <p>Think about what you just did: you didn't upgrade the robot. You didn't give it a
+          better brain, more memory, or new powers. <b>You rewrote one sentence of description.</b></p>
+          <p>Hold that thought while you run it — because this is the most practical lesson in this
+          whole game: <em>when an AI agent seems dumb, the problem is usually the instructions a
+          human wrote, not the AI.</em> Vague tool descriptions, missing context, errors that crash
+          instead of explain — that's where agents die. Engineers call all of it "the harness",
+          and tuning the harness is most of the real job.</p>
+          <p>Same robot. Same brain. Better words. Press RUN and watch the difference.</p>`)); } }});
 
-    let running=false, solved=false, ranOnce=false;
+    let running=false, solved=false, ranOnce=false, insFail=false, insWords=false;
     W.button({x:0,z:9,label:'RUN THE LOOP',color:W.C.green,fn:()=>{
       if(running||solved) return;
       if(!cfg.scanDesc){ buzz(); toast('choose a description for the scan tool first'); return; }
@@ -90,6 +99,20 @@ export default {
         after(15.6,()=>{ running=false; buzz();
           toast('The drone was not stupid. <b>It was blind.</b> Its scan tool description told it nothing.<br>Fix the harness and run again.',5200);
           moveTo(0,-9,1.2);
+          if(!insFail){ insFail=true; after(2.2,()=>insight('Anatomy of an agent — and why this one failed', `
+            <p>Replay what you saw on the screen. THOUGHT: the robot reasons in plain text.
+            ACTION: it picks a tool. OBSERVATION: it reads what actually happened. Then round again.
+            <b>That loop — think, act, observe — is every "AI agent" on Earth.</b> The ones that
+            book flights, the ones that write code. About 60 lines of programming around a brain.
+            There is no other secret.</p>
+            <p><b>So why did it fail?</b> Not intelligence. The robot can only choose tools by
+            reading their descriptions — descriptions are its <em>only eyes</em>. You handed it
+            "does stuff with things." It was blind, so it guessed, and guessing looks exactly like
+            stupidity.</p>
+            <p>One more gem you may have missed: when it hit the locked vault, the vault answered
+            with an <b>error message it could read</b> — and the robot changed plans instead of
+            crashing. "Return errors as readable messages" is a genuinely valuable engineering rule.
+            Now go fix that description and run it again.</p>`)); }
         });
       } else {
         say(0.3,'THOUGHT: Retrieve the key, open the vault. scan lists objects — use it FIRST.','#cfe6ff');

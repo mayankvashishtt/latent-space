@@ -1,6 +1,6 @@
 // IV · EMBEDDING SPACE — meaning as geometry: file misplaced words, then RIDE king−man+woman.
 import * as THREE from 'three';
-import { G, spawn, obj, toast, complete, chime, buzz, onTick, hold, dropHeld, guide, playerNear } from '../engine.js';
+import { G, spawn, obj, toast, complete, chime, buzz, onTick, hold, dropHeld, guide, playerNear, insight, after } from '../engine.js';
 import * as W from '../world.js';
 import { TEXT } from '../text.js';
 
@@ -79,6 +79,18 @@ export default {
               spm.position.set(cl.x+(Math.random()-.5)*4, 2.2, cl.z+(Math.random()-.5)*4);
               spm.userData.baseY=2.2; s.add(spm);
               filed++; carrying=null; chime();
+              if(filed===1) after(1.2,()=>insight('Meaning is a place', `
+                <p>Notice what just happened: the circle accepted the word because of what it
+                <b>MEANS</b>, not how it's spelled. "Puppy" shares zero letters with "dog" — but it
+                belongs here, and the map knows it.</p>
+                <p>This is how AI stores meaning: <b>every word is a point on a giant map, and
+                similar meanings live close together.</b> These positions are called <em>embeddings</em>.
+                Nobody drew this map — it grew during training, from seeing which words appear in
+                similar situations. Words used alike drift together.</p>
+                <p><b>Why this matters in real life:</b> when you search "cheap flights" and get
+                results saying "affordable airfare" — zero shared words — that's this map working.
+                Same for recommendations, spam filters, and the document-search you'll break in
+                Chamber V. Two more lost words to file.</p>`));
               toast(`"${spm===null?'':''}${name}" accepts the word — distance is meaning. ${filed}/3 filed`);
               if(filed===3){ obj('ALL FILED — a platform has risen on <b>KING</b>. Board it.'); buildRide(); }
               else obj('carry the remaining misfiled words home');
@@ -93,6 +105,19 @@ export default {
     // ---------- task 2: vector ride ----------
     function buildRide(){
       const R=clusters.ROYALTY;
+      after(1.0,()=>insight('You can do MATH on meanings', `
+        <p>Here's the discovery that made researchers fall out of their chairs in 2013: because
+        meanings are <b>positions</b>, and positions are numbers, <b>you can add and subtract
+        IDEAS like coordinates.</b></p>
+        <p>Take KING. Subtract MAN — you remove the "male" direction. Add WOMAN — you move in the
+        "female" direction. Where do you land? Almost exactly on <b>QUEEN</b>. It works because
+        "male→female" is the <em>same arrow everywhere on the map</em> — from king to queen, from
+        actor to actress, from uncle to aunt. Relationships became directions. Nobody programmed
+        that; it emerged.</p>
+        <p>The platform on KING is ready. Pick your two vectors carefully — pick wrong and you drift
+        into the void between meanings. And before you ride: glance at that shivering blob of dates
+        in the corner. All of them at nearly the SAME point. Remember it. It becomes a disaster in
+        Chamber V.</p>`));
       const plat=new THREE.Mesh(new THREE.CylinderGeometry(2.2,2.4,.5,12),W.mat(W.C.gold,{emissive:W.C.gold,ei:.7}));
       plat.position.set(R.x-4.2,0.25,R.z); s.add(plat);
       const platCol=G.colliders[G.colliders.push({min:new THREE.Vector3(R.x-6.4,0,R.z-2.2),max:new THREE.Vector3(R.x-2,0.5,R.z+2.2),solid:true})-1];
