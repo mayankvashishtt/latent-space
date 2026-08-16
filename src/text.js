@@ -5,16 +5,26 @@ export const TEXT = {
 
 0:{ intro:`
   <p><b>Welcome. You are inside an AI brain.</b></p>
-  <p>Nine chambers, one big idea each — and you will <em>do</em> every idea with your own hands.</p>
+  <p>Everything AI does — ChatGPT, your feed, face unlock, spam filters — is built from a few
+  surprisingly simple ideas. Nine chambers, one idea each — and you will <em>do</em> every one
+  of them with your own hands.</p>
   <p class="quote">🔊 A voice will guide you, step by step. Do what it says, and watch what happens.
   Press <code>V</code> anytime to mute it.</p>`
 },
 1:{ intro:`
-  <p><b>THE BIG IDEA: a brain cell makes ONE straight cut — and training is how billions of cuts
-  find their place.</b></p>
-  <p>Three acts: make the cut · meet the cut that can't exist · then step off the edge and
-  <em>become</em> the training algorithm.</p>
-  <p class="quote">Follow NOVA and BIT. The TASK card (top-left) always says what to do next.<br>Truly stuck? Press <b>H</b> and the room will solve itself in front of you.</p>`,
+  <p><b>Before you touch anything — why are you here?</b></p>
+  <p>Think about your day: your face unlocked your phone. Gmail caught the spam. Instagram picked
+  your next video. Your bank quietly checked that purchase wasn't fraud. Maybe you asked ChatGPT
+  something. <b>All of that is AI — and all of it, every single one, is built from the SAME tiny
+  part, repeated over and over.</b> Your spam filter has a few hundred of them. ChatGPT has about
+  a trillion. There is no other ingredient.</p>
+  <p>That part is called a <b>neuron</b> — and the wall of light in this room IS one, life-size,
+  with its two knobs exposed so you can grab them.</p>
+  <p><b>The plan:</b> Act 1 — hold the brick (make one neuron work with your hands).
+  Act 2 — find its famous limit (the puzzle that nearly killed AI). Act 3 — the real question:
+  nobody sets a trillion knobs by hand... so who does? You'll BE the answer.</p>
+  <p class="quote">📘 Lessons appear as you play and save to your log — press <b>L</b> anytime ·
+  <b>H</b> if stuck · TASK card top-left always shows your next move.</p>`,
   codex:{
     html:`<p><b>What you just did, in plain words:</b></p>
     <p><b>Act 1:</b> that wall was a <b>neuron</b> — one cell of an AI. One straight cut: this side

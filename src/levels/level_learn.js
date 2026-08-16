@@ -3,7 +3,7 @@
 //   Act 2: the cut that cannot exist (XOR, 1969, hidden layers)
 //   Act 3: the floor opens — descend the loss landscape to learn the weights for real
 import * as THREE from 'three';
-import { G, spawn, obj, toast, complete, chime, buzz, blip, onTick, hudBar, guide, playerNear, insight, after } from '../engine.js';
+import { G, spawn, obj, toast, complete, chime, buzz, blip, onTick, hudBar, guide, playerNear, insight, after, panelOpen } from '../engine.js';
 import * as W from '../world.js';
 import { TEXT } from '../text.js';
 
@@ -247,6 +247,26 @@ export default {
 
     obj('ACT 1 — move the wall of light: <b>gold on its GOLD side, blue on its BLUE side</b>');
 
+    // Lesson 0 — fires once, the moment the intro panel is closed, before anything else
+    let _l0=false;
+    onTick(()=>{ if(!_l0 && !panelOpen()){ _l0=true;
+      after(0.5,()=>insight('The one brick everything is built from', `
+        <p>Quick tour of your own day: your face unlocked your phone — that was an AI deciding
+        "you / not you." Gmail filed the spam — "spam / not spam." Your feed picked a video —
+        "will like / won't like." Your bank watched your card — "fraud / normal." And ChatGPT
+        answered you by deciding, word after word, "this word next / not this one."</p>
+        <p><b>Every one of those decisions — all of them — is made by the same tiny part: a
+        NEURON.</b> A spam filter uses a few hundred. Your phone's face-unlock, a few million.
+        ChatGPT, about a trillion. Different sizes, <em>same brick</em>. In seventy years of AI,
+        nobody has needed a second kind of brick.</p>
+        <p>So here's the whole strategy of this game: <b>you can't understand a wall of a trillion
+        bricks without holding ONE brick in your hands.</b> The wall of light in this room is one
+        neuron, life-size. Its two buttons are its only two knobs. By the end of this chamber
+        you'll know what the brick does, what it CAN'T do, and how a trillion of them get set
+        without any human touching them — that's the skeleton of all modern AI.</p>
+        <p>Walk to the buttons. Let's hold the brick.</p>`));
+    }});
+
     let lastY=null, stuckT=0;
     onTick(dt=>{
       if(act<3){ zoneA.update(); zoneB.update(); }
@@ -364,7 +384,7 @@ export default {
     guide([
       {who:'nova', task:'Walk to the two glowing buttons ahead',
        say:"Welcome to the Learning Machine. See the gold and blue balls, and the wall of light between them? Walk down to the two buttons.",
-       when:()=>playerNear(-1.8,7,4.5)},
+       when:()=>playerNear(-2.2,7,2.2)},
       {who:'bit', task:'Press E on ROTATE — watch the wall and the rings',
        do:()=>insight('Why are we splitting balls with a wall?', `
          <p>Because <b>every decision an AI makes is a split.</b> Spam or not spam. Approve the loan
