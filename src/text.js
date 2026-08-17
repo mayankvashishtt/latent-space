@@ -18,8 +18,12 @@ export const TEXT = {
   something. <b>All of that is AI — and all of it, every single one, is built from the SAME tiny
   part, repeated over and over.</b> Your spam filter has a few hundred of them. ChatGPT has about
   a trillion. There is no other ingredient.</p>
-  <p>That part is called a <b>neuron</b> — and the wall of light in this room IS one, life-size,
-  with its two knobs exposed so you can grab them.</p>
+  <p>Remember the origin story: scientists couldn't write recipes for human things, so they
+  <b>copied one brain cell into math</b> — the little voter that listens, weighs, and shouts.
+  They called the copy a <b>neuron</b>.</p>
+  <p><b>The wall of light in this room IS that math brain-cell — life-size,</b> with its two
+  knobs exposed so you can grab them. (Missed the story? It's on the map: "watch the origin
+  story again.")</p>
   <p><b>The plan:</b> Act 1 — hold the brick (make one neuron work with your hands).
   Act 2 — find its famous limit (the puzzle that nearly killed AI). Act 3 — the real question:
   nobody sets a trillion knobs by hand... so who does? You'll BE the answer.</p>

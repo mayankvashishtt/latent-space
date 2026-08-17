@@ -54,7 +54,11 @@ export function boot(levels){
     setTimeout(()=>menu.remove(), 850);
     canvas.requestPointerLock();
     loadLevel(0);
-    setTimeout(()=>{ G.openMap && G.openMap(); }, 1600);
+    setTimeout(()=>{
+      if(G.storyIntro && !localStorage.getItem('ls.story')){
+        G.storyIntro(()=>{ localStorage.setItem('ls.story','1'); setTimeout(()=>G.openMap&&G.openMap(), 400); });
+      } else { G.openMap && G.openMap(); }
+    }, 1400);
   });
   canvas.addEventListener('click', ()=>{ if(G.started && !panelOpen()) canvas.requestPointerLock(); });
 
@@ -113,7 +117,7 @@ export function loadLevel(i){
     startAmbient(i);
     G._levelState = L.build(G) || {};
     fade(0);
-    if(L.intro && !(i===0 && sessionStorage.getItem('ls.hubSeen'))){
+    if(L.intro && !(i===0 && (sessionStorage.getItem('ls.hubSeen') || !localStorage.getItem('ls.story')))){
       if(i===0) sessionStorage.setItem('ls.hubSeen','1');
       panel({title:L.name, sub:L.tagline||'', html:L.intro, buttons:[{label:'Begin', primary:true}]});
     }

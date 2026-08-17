@@ -55,7 +55,8 @@ export function openMap(){
     <div class="mapNote">More of the course — scale &amp; MoE, vision, world models, multi-agent, memory —
       is being built as future chambers. Until then it lives in
       <a href="https://github.com/mayankvashishtt/ai-ml-bootcamp-archive" target="_blank">the full notes archive</a>
-      (38 lectures, plain-English rewrite included).</div>
+      (38 lectures, plain-English rewrite included).
+      &nbsp;·&nbsp; <a href="#" id="storyReplay">↻ watch the origin story again</a></div>
     <div class="mapFoot">
       <button id="mapClose">CLOSE MAP &nbsp;·&nbsp; M</button>
     </div>
@@ -80,6 +81,8 @@ export function openMap(){
     if(lvl!=='') row.addEventListener('click',()=>{ closeMap(); loadLevel(parseInt(lvl,10)); });
   });
   document.getElementById('mapClose').onclick=closeMap;
+  const sr=document.getElementById('storyReplay');
+  if(sr) sr.onclick=(e)=>{ e.preventDefault(); closeMap(); G.storyIntro&&G.storyIntro(()=>{}); };
 }
 export function closeMap(){
   const el=document.getElementById('map'); if(el) el.style.display='none';
